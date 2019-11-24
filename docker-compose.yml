@@ -1,0 +1,15 @@
+version: '3'
+services:
+  server:
+    build: .
+    deploy:
+      replicas: ${REPLICAS}
+  haproxy:
+    image: haproxy:latest
+    volumes:
+      - './haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg'
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - REPLICAS=${REPLICAS}
+      - PORT=${PORT}

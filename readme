@@ -1,0 +1,42 @@
+docker volume prune
+
+
+# how to send logs manualy to local: ֿ
+$ cd gaia-hermes-ws
+$ gaia-restart   # backend
+$ sudo yarn serve #front end
+# go to http://localhost:9000/#/dashboard/data-sources/
+$ curl -T ~/logs/services.log http://localhost:8021/file_upload/ShHHmJTWQDHljEMXWQIRJizdmWHqHUwf/log #upload log file 	to local
+#in cas esome thing went wrong you may use:
+$ docker stop $(docker ps -a -q)
+$ yarn install:base
+
+
+# how to send logs using the this app to local:
+$ cd gaia-hermes-ws
+$$ yarn install:base #in case some thing wrong use this
+$ gaia-restart   # backend
+$ sudo yarn serve #front end
+$ ./gradlew build
+$ docker build . -t my-app -f Dockerfile
+$ docker run -p 8081:8081 my-app
+$ ./gradlew build
+$ docker-compose up
+$ curl -T ~/logs/services.log http://localhost:8021/file_upload/FJXduSkqbXFOVroBLRmgSoxUXMpYJyhe/log #upload log file 	to local
+
+/*
+$ docker build -t awesome .
+$ docker swarm init
+$ docker stack deploy --compose-file=docker-compose.yml prod
+*/
+
+
+$ ./gradlew build
+$ docker build -t fadi/bootcamp .
+$ docker-compose up --scale bootcamp=3
+$ docker-compose down
+
+
+docker run -p 8080:8080 fadi/bootcamp
+
+$ docker image prune --all
