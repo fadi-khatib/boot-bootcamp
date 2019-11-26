@@ -17,7 +17,7 @@ sourceSets {
 }
 jar {
     manifest {
-        attributes "Main-Class": "MainClass"
+        attributes "Main-Class": "boot.MainClass"
     }
 
     from {
@@ -56,8 +56,17 @@ dependencies {
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:${jerseyVersion}"
     compile "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
 
+    compile 'io.logz:guice-jersey:1.0.9'
+    //compile group: 'com.google.inject', name: 'guice', version: '4.0'
+    compile 'com.google.inject:guice:2.0'
+
+
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
+
+    //compile 'org.json:json:20171018'
+    compile "com.googlecode.json-simple:json-simple:1.1.1"
+
 }
 
 
@@ -66,5 +75,5 @@ apply plugin : "java"
 
 
 application {
-    mainClassName = "MainClass"
+    mainClassName = "boot.MainClass"
 }
