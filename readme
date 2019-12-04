@@ -40,5 +40,22 @@ $ docker-compose down
 docker run -p 8080:8080 fadi/bootcamp
 
 $ docker image prune --all
-$ docker-compose --compatibility up --build
 
+/////////////elastic search
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+curl -X GET "localhost:9200/_cat/nodes?v&pretty"
+
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+
+sudo lsof -i:8080
+
+docker-machine ssh elastic
+$ docker network inspect bridge
+docker network ls
+
+
+docker network create example
+docker run -d --net example --name elastic1 -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+./gradlew build
+docker build -t fadi .
+docker run -d --net example --name container2 fadi

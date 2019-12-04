@@ -56,6 +56,8 @@ dependencies {
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:${jerseyVersion}"
     compile "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
 
+//    compile "org.glassfish.jersey.media:jersey-media-moxy:2.25"
+
     compile 'io.logz:guice-jersey:1.0.9'
     //compile group: 'com.google.inject', name: 'guice', version: '4.0'
     compile 'com.google.inject:guice:2.0'
@@ -63,9 +65,16 @@ dependencies {
 
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
+    //compile group: ‘org.slf4j’, name: ‘slf4j-simple’, version: ‘1.6.1’
 
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     //compile 'org.json:json:20171018'
+    //compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    //compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compile "com.googlecode.json-simple:json-simple:1.1.1"
+
+    //testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.0-M1'
+    //testCompile 'junit:junit:4.12'
 
 }
 

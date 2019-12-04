@@ -1,9 +1,9 @@
 FROM openjdk:8-jre-slim
-# FROM haproxy
-# COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 RUN mkdir /app
-COPY /build/libs/gradle-1.0-SNAPSHOT.jar /app/spring-boot-application.jar
-Expose 8080
-ENTRYPOINT ["java","-jar","/app/spring-boot-application.jar"]
+# we expose the 8080 port which would be used in connecting with the outside environment.
+EXPOSE 8080
+COPY ./build/libs/gradle-1.0-SNAPSHOT.jar /app/spring-boot-application.jar
+ENTRYPOINT ["java", "-jar", "/app/spring-boot-application.jar"]
+#ENTRYPOINT ["java","-jar","/app/spring-boot-application.jar"]
 
-
+#java -jar ./build/libs/gradle-1.0-SNAPSHOT.jar
