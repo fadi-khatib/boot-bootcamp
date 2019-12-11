@@ -8,7 +8,6 @@ import javax.ws.rs.client.ClientBuilder;
 import com.google.inject.Provides;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
-import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -28,6 +27,7 @@ public class ServerModule extends AbstractModule {
           install(new JerseyModule(configuration));
           bind(ServerConfiguration.class);
           bind(ElasticSearchHandler.class);
+          bind(EntryPoint.class);
 
     }
 
@@ -37,11 +37,5 @@ public class ServerModule extends AbstractModule {
         config.register(JacksonJsonProvider.class);
         Client client = ClientBuilder.newClient(config);
         return client;
-    }
-    @Provides
-    public Msg providesMsg(String message ) {
-        Msg msg  = new Msg();
-        msg.setMessage(message);
-        return msg;
     }
 }

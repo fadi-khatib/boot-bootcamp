@@ -1,11 +1,11 @@
-package boot;
+package bootTest;
+import boot.Msg;
+
 import javax.inject.Inject;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -13,9 +13,9 @@ import javax.ws.rs.core.Response;
 
 
 public class HttpRequestHandler {
-    private Client client;// = ClientBuilder.newClient();
+    private Client client;
     private Msg msg;
-    private String endPoint ;//= "http://localhost:9200";//"elastic1.example";//"http://localhost:9200"
+    private String endPoint ;
     private String path;
 
     @Inject

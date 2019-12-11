@@ -1,13 +1,23 @@
 plugins {
     id 'java'
     id "application"
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
+group 'boot-bootcamp'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+application {
+    mainClassName = "boot.MainClass"
+}
 
 ext {
     jettyVersion = '9.4.6.v20170531'
     jerseyVersion = '2.27'
 }
+
 sourceSets {
     main {
         resources {
@@ -15,15 +25,23 @@ sourceSets {
         }
     }
 }
-jar {
-    manifest {
-        attributes "Main-Class": "boot.MainClass"
-    }
 
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+repositories {
+    mavenCentral()
 }
+
+apply plugin : "java"
+
+
+//jar {
+//    manifest {
+//        attributes "Main-Class": "boot.MainClass"
+//    }
+//
+//    from {
+//        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+//}
 /*task fatJar(type: Jar) {
     jar {
         manifest {
@@ -34,17 +52,19 @@ jar {
         with jar
     }
 }*/
-group 'boot-bootcamp'
-version '1.0-SNAPSHOT'
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
 
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
+    // What the fuck is this?
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 }
 
+
+
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'io.logz.log4j2:logzio-log4j2-appender:1.0.5'
 
     compile "org.eclipse.jetty:jetty-server:${jettyVersion}"
@@ -65,7 +85,8 @@ dependencies {
 
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
-    //compile group: ‘org.slf4j’, name: ‘slf4j-simple’, version: ‘1.6.1’
+
+
 
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     //compile 'org.json:json:20171018'
@@ -73,16 +94,31 @@ dependencies {
     //compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compile "com.googlecode.json-simple:json-simple:1.1.1"
 
+//    compile "org.elasticsearch.client:transport:5.6.0"
+//    compile "org.elasticsearch:elasticsearch:5.6.0"
+
     //testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.0-M1'
     //testCompile 'junit:junit:4.12'
+    //testCompile group: 'junit', name: 'junit', version: '4.12'
+
+//    compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:8.0.0"
+    compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-high-level-client', version: '7.5.0'
+    compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-client', version: '7.5.0'
+    compile group: 'org.elasticsearch.client', name: 'rest', version: '5.5.3'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.9.0'
+    compile "org.apache.commons:commons-lang3:3.3.2"
+    //kafka
+    compile "org.apache.kafka:kafka-clients:0.11.0.0"
+    //compile "org.slf4j:slf4j-simple:1.7.25"
+
+
+
 
 }
 
 
-apply plugin : "java"
 
 
 
-application {
-    mainClassName = "boot.MainClass"
-}
+

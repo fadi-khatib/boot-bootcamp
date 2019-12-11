@@ -15,8 +15,6 @@ public class MainClass {
         ServerConfiguration SConfig = new ServerConfiguration();
         Injector injector = Guice.createInjector(new ServerModule(SConfig));
         injector.getInstance(JerseyServer.class).start();
-
-
     }
 
 }
