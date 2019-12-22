@@ -40,7 +40,7 @@ $ docker-compose down
 docker run -p 8080:8080 fadi/bootcamp
 
 $ docker image prune --all
-
+docker image prune --all
 /////////////elastic search
 docker pull docker.elastic.co/elasticsearch/elasticsearch:7.4.2
 curl -X GET "localhost:9200/_cat/nodes?v&pretty"
@@ -92,3 +92,7 @@ $ docker run -d \
 
 - Create topic inside runing kafka:
 $ docker exec kafka \ > kafka-topics.sh --create --topic my-topic --replication-factor 1 --partitions 1 --zookeeper 192.168.1.91:2181
+
+
+
+git checkout -b dev

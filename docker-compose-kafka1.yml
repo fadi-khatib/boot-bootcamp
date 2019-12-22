@@ -1,0 +1,110 @@
+version: '3'
+services:
+
+# comment our server for now (will try to trigger producer from out side docker compose file )
+#  server:
+#    build: .
+#    deploy:
+#      replicas: ${REPLICAS}
+#  haproxy:
+#    image: haproxy:latest
+#    volumes:
+#      - './haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg'
+#    ports:
+#      - "${PORT}:${PORT}"
+#    environment:
+#      - REPLICAS=${REPLICAS}
+#      - PORT=${PORT}
+
+
+
+  # ---------------- Kakfa & Zookeeper --------------
+  zookeeper:
+    image: zookeeper:3.4
+    ports:
+      - "2181:2181"
+#    build:
+#      context: ./sc4-zookeeper
+#    hostname: zookeeper
+#    container_name: zookeeper
+#    environment:
+#      - MYID=1
+#    expose:
+#      - "2181"
+#    networks:
+#      - pilot-sc4-net
+
+  kafka:
+    image: ches/kafka
+#    build:
+#      context: ./sc4-kafka
+#    hostname: localhost
+#    container_name: kafka
+    environment:
+      - SERVICE_PRECONDITION=zookeeper:2181
+      - ZOOKEEPER_SERVERS=zookeeper:2181
+      - INITIAL_TOPICS="taxi"
+      - KAFKA_ADVERTISED_HOST_NAME=192.168.1.91
+      - ZOOKEEPER_IP=192.168.1.91
+    depends_on:
+      - zookeeper
+    expose:
+      - "9092"
+    ports:
+      - 9092:9092
+      - 7203:7203
+    volumes:
+      - data:/Users/fadikhatib/Documents/Bootcamp/Exercises/boot-bootcamp-gradle/kafka-ex/data
+      - logs:/Users/fadikhatib/Documents/Bootcamp/Exercises/boot-bootcamp-gradle/kafka-ex/logs
+#    networks:
+#      - pilot-sc4-net
+
+#  elastic:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+#    container_name: elastic
+#    ports:
+#      - 9200:9200
+#      - 9300:9300
+#    environment:
+#      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+#      network.bind_host: 0.0.0.0
+#      network.host: 0.0.0.0
+#      discovery.type: single-node
+#    volumes:
+#      - "esdata:/usr/share/elasticsearch/data"
+
+#  producer:
+#    image:  producerimg
+#    container_name: producer
+##    ports:
+##      - 9200:9200
+##      - 9300:9300
+#    environment:
+#      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+#      network.bind_host: 0.0.0.0
+#      network.host: 0.0.0.0
+#      discovery.type: single-node
+#    depends_on:
+#      - kafka
+#      - elastic
+#
+#  consumer:
+#    image: consumerimg
+#    container_name: consumer
+##    ports:
+##      - 9200:9200
+##      - 9300:9300
+#    environment:
+#      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+#      network.bind_host: 0.0.0.0
+#      network.host: 0.0.0.0
+#      discovery.type: single-node
+
+#networks:
+#  pilot-sc4-net:
+
+volumes:
+  data:
+  logs:
+#  esdata:
+#     driver: local

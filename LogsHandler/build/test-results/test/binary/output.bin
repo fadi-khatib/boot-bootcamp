@@ -1,0 +1,6 @@
+Hi Test
+java.lang.NullPointerException
+befor each test
+ƒInboundJaxrsResponse{context=ClientResponse{method=POST, uri=http://localhost:8080/entry-point/send/index, status=200, reason=OK}}
+CREATED
+after each test

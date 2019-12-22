@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id "application"
+    id 'com.github.johnrengelman.shadow'
+}
+
+group 'boot-bootcamp'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = "Consumer.KafkaReceiver"
+}
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+
+    // What the fuck is this?
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+dependencies {
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    compile "com.googlecode.json-simple:json-simple:1.1.1"
+
+    compile "org.apache.kafka:kafka-clients:0.11.0.0"
+
+    compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-high-level-client', version: '7.5.0'
+    compile group: 'org.elasticsearch.client', name: 'elasticsearch-rest-client', version: '7.5.0'
+    compile group: 'org.elasticsearch.client', name: 'rest', version: '5.5.3'
+}

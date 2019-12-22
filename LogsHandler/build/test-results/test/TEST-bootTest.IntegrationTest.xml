@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="bootTest.IntegrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-12-22T10:54:37" hostname="ip-192-168-1-4.ec2.internal" time="176.089">
+  <properties/>
+  <testcase name="testEndToEnd" classname="bootTest.IntegrationTest" time="176.089"/>
+  <system-out><![CDATA[Hi Test
+java.lang.NullPointerException
+befor each test
+InboundJaxrsResponse{context=ClientResponse{method=POST, uri=http://localhost:8080/entry-point/send/index, status=200, reason=OK}}
+CREATED
+after each test
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
