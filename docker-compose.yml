@@ -12,13 +12,13 @@ services:
     networks:
       - kafkastreams-network
 
-#  #    deploy:
-#  #      replicas: ${REPLICAS}
 
-  loghandler:
-    image: logshandlerimg1
+
+  server:
+#    image: logshandlerimg1
 #    ports:
 #      - "8080:8080"
+    build: ./LogsHandler
     deploy:
       replicas: ${REPLICAS}
     networks:
@@ -52,7 +52,8 @@ services:
       - kafkastreams-network
 
   consumer:
-    image: consumerimg1
+#    image: consumerimg1
+    build: ./Consumer
     depends_on:
       - zookeeper
     networks:
@@ -70,6 +71,8 @@ services:
       - kafkastreams-network
 
 
+volumes:
+  my-db:
 
 networks:
     kafkastreams-network:
