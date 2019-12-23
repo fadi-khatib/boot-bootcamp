@@ -1,7 +1,5 @@
 package Consumer;
 
-//import javax.inject.Inject;
-
 public class Msg {
     public String message;
     public Msg() {

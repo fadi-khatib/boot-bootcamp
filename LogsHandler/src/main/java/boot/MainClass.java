@@ -8,7 +8,6 @@ import io.logz.guice.jersey.JerseyServer;
 
 public class MainClass {
     private static int count = 0;
-    //private static ServerConfiguration serverConfigurations;
 
     public static void main(String[] args) throws Exception{
         System.out.println("hi server");

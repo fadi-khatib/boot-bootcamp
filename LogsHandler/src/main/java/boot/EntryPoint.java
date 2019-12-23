@@ -1,7 +1,6 @@
 package boot;
 //Now we need to create a simple test REST service class boot.bootcamp.EntryPoint:
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -122,33 +121,5 @@ public class EntryPoint {
         return result;
 
     }
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////// send to message to producer
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//@POST
-//@Produces(MediaType.TEXT_PLAIN)
-//@Consumes(MediaType.APPLICATION_JSON)
-//@Path("/producer/index")
-//public String sendToProducer(Msg msg , @Context  UriInfo uriInfo , @HeaderParam("user-agent") String userAgent) {
-//
-//    System.out.println("EntryPoint.producer.index");
-//    String result = "";
-//    String messageId = "";
-//    String res = "sendToProducer" ;
-//
-//    Map<String, String> map = new HashMap<>();
-//    map.put("message", msg.getMessage());
-//    map.put("User-Agent", userAgent);
-//
-//    try {
-//        res = kafkaPublisher.produce(map);
-//    } catch (Exception e){
-//        System.out.println(e.getMessage());
-//        return e.getMessage();
-//    }
-//    return res;
-//}
 
 }

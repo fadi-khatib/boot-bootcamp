@@ -1,5 +1,29 @@
 version: '3'
 services:
+  haproxy:
+    image: haproxy:latest
+    volumes:
+      - './haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg'
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - REPLICAS=${REPLICAS}
+      - PORT=${PORT}
+    networks:
+      - kafkastreams-network
+
+#  #    deploy:
+#  #      replicas: ${REPLICAS}
+
+  loghandler:
+    image: logshandlerimg1
+#    ports:
+#      - "8080:8080"
+    deploy:
+      replicas: ${REPLICAS}
+    networks:
+      - kafkastreams-network
+
   zookeeper:
     image: wurstmeister/zookeeper
     hostname: zookeeper
@@ -28,18 +52,12 @@ services:
       - kafkastreams-network
 
   consumer:
-    image: consumerimg
+    image: consumerimg1
     depends_on:
       - zookeeper
     networks:
       - kafkastreams-network
 
-  loghandler:
-    image: logshandlerimg
-    ports:
-      - "8080:8080"
-    networks:
-      - kafkastreams-network
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0

@@ -1,9 +1,7 @@
 package Consumer;
 
-import com.google.gson.Gson;
+
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,7 +12,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import org.elasticsearch.action.index.IndexResponse;
 
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,29 +20,29 @@ import java.util.Map;
 
 
 public class KafkaReceiver {
-    final static String kafkaIp = ConsumerConfiguration.kafkaHost+":"+ConsumerConfiguration.kafkaPort;//"kafka:9092";
+    private static String kafkaIp ;
 
     public static void main(String[] args) {
+        kafkaIp = ConsumerConfiguration.kafkaHost+":"+ConsumerConfiguration.kafkaPort;
         ElasticSearchHandler elasticSearchHandler = new ElasticSearchHandler();
         Properties props = new Properties();
 
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, IKafkaConstants.KAFKA_BROKERS);
-        //props.put(ConsumerConfig.CLIENT_ID_CONFIG, KafkaPublisher.IKafkaConstants.CLIENT_ID);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaIp);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
 
 
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, IKafkaConstants.GROUP_ID_CONFIG);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ConsumerConfiguration.GROUP_ID_CONFIG);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, IKafkaConstants.MAX_POLL_RECORDS);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, ConsumerConfiguration.MAX_POLL_RECORDS);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,IKafkaConstants.OFFSET_RESET_EARLIER);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,ConsumerConfiguration.OFFSET_RESET_EARLIER);
 
 
 
         Consumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList(IKafkaConstants.TOPIC_NAME));
+        consumer.subscribe(Collections.singletonList(ConsumerConfiguration.TOPIC_NAME));
         consumer.subscribe(Arrays.asList("my-topic"));
         Map<String,String> map = new HashMap<>();
         while (true) {
@@ -72,17 +69,6 @@ public class KafkaReceiver {
                 }
             }
         }
-    }
-    public interface IKafkaConstants {
-        public static String KAFKA_BROKERS = ConsumerConfiguration.kafkaHost+":"+ConsumerConfiguration.kafkaPort;
-        public static Integer MESSAGE_COUNT=1000;
-        public static String CLIENT_ID="client1";
-        public static String TOPIC_NAME="demo";
-        public static String GROUP_ID_CONFIG="consumerGroup1";
-        public static Integer MAX_NO_MESSAGE_FOUND_COUNT=100;
-        public static String OFFSET_RESET_LATEST="latest";
-        public static String OFFSET_RESET_EARLIER="earliest";
-        public static Integer MAX_POLL_RECORDS=1;
     }
 
 }

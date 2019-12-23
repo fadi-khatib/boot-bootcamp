@@ -43,6 +43,6 @@ public class ServerConfiguration {
     }
 
     public ServerConfiguration(){
-        System.out.println("why static is not working");
+        System.out.println("create ne ServerConfig");
     }
 }

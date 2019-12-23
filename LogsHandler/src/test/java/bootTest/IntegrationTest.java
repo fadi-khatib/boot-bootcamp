@@ -2,9 +2,6 @@ package bootTest;
 
 
 import boot.Msg;
-import boot.ServerConfiguration;
-import boot.ServerModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.logz.guice.jersey.JerseyServer;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,8 +30,6 @@ public class IntegrationTest {
     @Before
     public void beforeAllTests(){
         System.out.println("Hi Test");
-//        ServerConfiguration SConfig = new ServerConfiguration();
-//        injector = Guice.createInjector(new ServerModule(SConfig));
         try{
             injector.getInstance(JerseyServer.class).start();
         }catch(Exception e){

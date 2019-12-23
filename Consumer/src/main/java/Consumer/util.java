@@ -1,14 +1,11 @@
 package Consumer;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 
 import java.io.FileReader;
-import java.io.StringReader;
 
 public class util {
 
