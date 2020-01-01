@@ -1,52 +1,63 @@
 package Consumer;
 
-import org.json.simple.JSONObject;
-
 public class ConsumerConfiguration {
 
-        // docker -java
-        private static final String configFilePath = "src/main/resources/consumer.config" ;
-        // local
-        private static final String additionalConfigFilePath = "Consumer/src/main/resources/consumer.config" ;
-        //elastic
-        public static final int elasticPort;
-        public static final int additionalElasticPort;
-        public static final String elasticHost;
-        //kafka
-        public static final int kafkaPort;
-        public static final String kafkaHost;
+    public ConsumerConfiguration(){
+    }
 
+    // docker -java
+    public static final String configFilePath = "src/main/resources/consumer.config" ;
+    // local
+    public static final String additionalConfigFilePath = "Consumer/src/main/resources/consumer.config" ;
+    //elastic
+    private int elasticPort;
+    private int additionalElasticPort;
+    private String elasticHost;
+    //kafka
+    private int kafkaPort;
+    private String kafkaHost;
 
-        //public static String KAFKA_BROKERS = ConsumerConfiguration.kafkaHost+":"+ConsumerConfiguration.kafkaPort;
-        public static Integer MESSAGE_COUNT=1000;
-        public static String CLIENT_ID="client1";
-        public static String TOPIC_NAME="demo";
-        public static String GROUP_ID_CONFIG="consumerGroup1";
-        public static Integer MAX_NO_MESSAGE_FOUND_COUNT=100;
-        public static String OFFSET_RESET_LATEST="latest";
-        public static String OFFSET_RESET_EARLIER="earliest";
-        public static Integer MAX_POLL_RECORDS=1;
+    private String CLIENT_ID;
+    private String TOPIC_NAME;
+    private String GROUP_ID_CONFIG;
 
-        static{
-            JSONObject config = util.fileToJson(configFilePath);
-            if(config == null){
-                System.out.println("fail to find consumer.config file at: " + configFilePath);
-                config = util.fileToJson(additionalConfigFilePath);
-            }
-            System.out.println(config.toJSONString());
-            //elasticSearch
-            elasticPort = Integer.parseInt(config.get("elasticPort").toString());
-            elasticHost = config.get("elasticHost").toString();
-            additionalElasticPort =  Integer.parseInt(config.get("additionalElasticPort").toString());
+    private String OFFSET_RESET_EARLIER;
+    private Integer MAX_POLL_RECORDS;
 
-            // kafka
-            kafkaPort = Integer.parseInt(config.get("kafkaPort").toString());
-            kafkaHost = config.get("kafkaHost").toString();
-
-
-        }
-
-        public ConsumerConfiguration(){
-            System.out.println("creating consumer configuration");
-        }
+    public String getConfigFilePath(){
+        return  configFilePath;
+    }
+    public String getAdditionalConfigFilePath(){
+        return  additionalConfigFilePath;
+    }
+    public String getElasticHost(){
+        return  elasticHost;
+    }
+    public String getKafkaHost(){
+        return  kafkaHost;
+    }
+    public String getCLIENT_ID(){
+        return  CLIENT_ID;
+    }
+    public String getTOPIC_NAME(){
+        return  TOPIC_NAME;
+    }
+    public String getGROUP_ID_CONFIG(){
+        return  GROUP_ID_CONFIG;
+    }
+    public String getOFFSET_RESET_EARLIER(){
+        return  OFFSET_RESET_EARLIER;
+    }
+    public Integer getMAX_POLL_RECORDS(){
+        return  MAX_POLL_RECORDS;
+    }
+    public int getElasticPort(){
+        return  elasticPort;
+    }
+    public int getAdditionalElasticPort(){
+        return  additionalElasticPort;
+    }
+    public int getKafkaPort(){
+        return  kafkaPort;
+    }
 }
