@@ -1,11 +1,12 @@
 package Consumer;
 
+//import boot.util;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
 public class MainClass {
 
     public static void main(String[] args) {
+
 
         System.out.println("Hi Consumer");
         // configuration
@@ -15,5 +16,6 @@ public class MainClass {
         Injector injector = Guice.createInjector(consumerModule);
         // start Jerseyserver
         injector.getInstance(KafkaReceiver.class).start();
+
     }
 }

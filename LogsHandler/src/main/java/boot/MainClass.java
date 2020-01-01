@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import io.logz.guice.jersey.JerseyServer;
 
 
+
 public class MainClass {
     private static int count = 0;
 
@@ -18,6 +19,7 @@ public class MainClass {
         Injector injector = Guice.createInjector(serverModule);
         // start Jerseyserver
         injector.getInstance(JerseyServer.class).start();
+
     }
 
 }

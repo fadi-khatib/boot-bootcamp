@@ -38,4 +38,7 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
+
+    compile project(':infarstructure:')
+
 }

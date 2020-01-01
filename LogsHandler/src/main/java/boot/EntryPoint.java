@@ -23,6 +23,7 @@ import java.util.Map;
 
 import Producer.KafkaPublisher;
 import org.json.simple.JSONObject;
+import util.InfraUtil;
 
 @Path("entry-point")
 public class EntryPoint {
@@ -77,7 +78,7 @@ public class EntryPoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/send/index")
     public String send(String jsonString , @Context  UriInfo uriInfo , @HeaderParam("user-agent") String userAgent) {
-        JsonObject jsonObject = util.StringToJson(jsonString);
+        JsonObject jsonObject = InfraUtil.StringToJson(jsonString);
         System.out.println("EntryPoint.send");
         String result = "";
         String messageId = "";

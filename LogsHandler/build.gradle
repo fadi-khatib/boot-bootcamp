@@ -74,4 +74,6 @@ dependencies {
 
     testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.1'
 
+    compile project(':infarstructure:')
+
 }

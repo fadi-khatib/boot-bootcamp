@@ -16,17 +16,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
+import util.InfraUtil;
+
+
 public class ConsumerModule extends AbstractModule {
 
     ConsumerConfiguration configuration;
 
     public ConsumerModule() {
         try {
-            configuration = Util.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
+            configuration = InfraUtil.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
         }catch(Exception e){
             System.out.println(e.getMessage());
             try {
-                configuration = Util.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
+                configuration = InfraUtil.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
             }catch(Exception exception){
                 System.out.println(exception.getMessage());
             }

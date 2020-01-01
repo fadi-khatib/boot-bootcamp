@@ -3,6 +3,8 @@ package boot;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import util.InfraUtil;
+
 
 
 public class ServerConfiguration {
@@ -21,11 +23,11 @@ public class ServerConfiguration {
     public static final String kafkaHost;
 
     static{
-        JSONObject config = util.fileToJson(configFilePath);
+        JSONObject config = InfraUtil.fileToJson(configFilePath);
         String s = (new File(System.getProperty("user.dir"))).toString();
          s = (new File(System.getProperty("user.dir")).getParent().toString());
         if(config == null){
-            config = util.fileToJson(additionalConfigFilePath);
+            config = InfraUtil.fileToJson(additionalConfigFilePath);
         }
         System.out.println(config.get("logMessage"));
         logMessage = config.get("logMessage").toString();

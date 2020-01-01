@@ -13,6 +13,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import util.InfraUtil;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class KafkaReceiver {
                 System.out.printf("offset = %s , key = %s, value = %s \n", record.offset(), record.key(), record.value());
                 System.out.println("Record partition " + record.partition());
                 // call elastic search handler here
-                JsonObject jObject = Util.StringToJson(record.value());
+                JsonObject jObject = InfraUtil.StringToJson(record.value());
                 if(jObject == null){
                     System.out.println("failed to parse json file for: \n" + record.value());
                 }
