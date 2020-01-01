@@ -1,7 +1,5 @@
 package boot;
 
-
-
 import com.google.gson.Gson;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
@@ -41,7 +39,7 @@ public class ElasticSearchHandler {
     }
 
     public IndexResponse index(){
-        IndexRequest request = new IndexRequest(index);
+        IndexRequest request = new IndexRequest(index, "_doc");
 
         request.source(new Gson().toJson(map) ,XContentType.JSON);
         IndexResponse indexResponse = null ;

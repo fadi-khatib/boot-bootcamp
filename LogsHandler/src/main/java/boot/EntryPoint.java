@@ -108,7 +108,7 @@ public class EntryPoint {
         MultivaluedMap<String, String> query = uriInfo.getQueryParameters();
         Map<String, String> map = new HashMap<>();
         map.put("message",query.get("message").get(0) );
-        map.put("User-Agent", query.get("header").get(0));
+        //map.put("User-Agent", query.get("header").get(0));
         SearchRequest searchRequest = elasticsearchClient.buildSearchQuery(map,"index");
         //SearchResponse searchResponse = null;
         try {

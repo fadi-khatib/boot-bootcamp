@@ -15,9 +15,6 @@ services:
 
 
   server:
-#    image: logshandlerimg1
-#    ports:
-#      - "8080:8080"
     build: ./LogsHandler
     deploy:
       replicas: ${REPLICAS}
@@ -52,7 +49,6 @@ services:
       - kafkastreams-network
 
   consumer:
-#    image: consumerimg1
     build: ./Consumer
     depends_on:
       - zookeeper

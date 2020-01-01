@@ -3,7 +3,6 @@ package bootTest;
 
 import boot.Msg;
 import com.google.inject.Injector;
-import io.logz.guice.jersey.JerseyServer;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -19,6 +18,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
+//import static org.awaitility.Awaitility.await;
+//import static org.junit.Assert.*;
+
 
 public class IntegrationTest {
     public HttpRequestHandler httpRequestHandler;
@@ -30,15 +32,10 @@ public class IntegrationTest {
     @Before
     public void beforeAllTests(){
         System.out.println("Hi Test");
-        try{
-            injector.getInstance(JerseyServer.class).start();
-        }catch(Exception e){
-            System.out.println(e.toString());
-        }
     }
 
     @Test
-    public void testEndToEnd() {
+    public void testEndToEnd()  {
         ClientConfig config = new ClientConfig();
         config.register(JacksonJsonProvider.class);
         Client client = ClientBuilder.newClient(config);
@@ -55,11 +52,31 @@ public class IntegrationTest {
         String result = postResponse.toString()+ "\n" + postResponse.readEntity(String.class);
         System.out.println(result);
 
-        httpRequestHandler.setPath("/entry-point/search?message="+key+"&header=Macintosh");
-        Response searchRes = httpRequestHandler.getRequest();
+        httpRequestHandler.setPath("/entry-point/search?message="+key);//+"&header=Macintosh"
 
+        try {
+            Thread.sleep(1000 * 7);
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        Response searchRes = httpRequestHandler.getRequest();
         assertNotNull(searchRes);
-        assertTrue(searchRes.getStatus() == HttpURLConnection.HTTP_OK);
+        String entity = searchRes.readEntity(String.class);
+        boolean isMessageIndexed = searchRes.getStatus() == HttpURLConnection.HTTP_OK;
+        boolean isMessageFound = entity.indexOf(key) > -1;
+        System.out.println("key index");
+        System.out.println(entity.indexOf(key));
+        assertTrue(isMessageIndexed & isMessageFound);
+//        await().atMost(Duration.ofSeconds(3)).until(()->{
+//            Response searchRes = httpRequestHandler.getRequest();
+//            assertNotNull(searchResponse);
+//            String entity = searchResponse.readEntity(String.class);
+//            boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
+//            boolean isMessageFound = entity.indexOf(randomString) > -1;
+//
+//            return isMessageIndexed && isMessageFound;
+//        });
+
     }
     @Before
     public void beforTest() {

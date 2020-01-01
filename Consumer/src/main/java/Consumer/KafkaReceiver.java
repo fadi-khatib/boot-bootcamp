@@ -56,7 +56,7 @@ public class KafkaReceiver {
     }
 
     private IndexResponse index(Map<String, String> map, String index){
-        IndexRequest request = new IndexRequest(index);
+        IndexRequest request = new IndexRequest(index,"_doc");
 
         request.source(new Gson().toJson(map) , XContentType.JSON);
         IndexResponse indexResponse = null ;
