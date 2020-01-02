@@ -21,19 +21,10 @@ import util.InfraUtil;
 
 public class ConsumerModule extends AbstractModule {
 
-    ConsumerConfiguration configuration;
+    private final ConsumerConfiguration configuration;
 
     public ConsumerModule() {
-        try {
-            configuration = InfraUtil.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            try {
-                configuration = InfraUtil.load(ConsumerConfiguration.configFilePath, ConsumerConfiguration.class);
-            }catch(Exception exception){
-                System.out.println(exception.getMessage());
-            }
-        }
+        configuration = InfraUtil.load(ConsumerConfiguration.DOCKER_CONFIG_FILEPATH, ConsumerConfiguration.class);
     }
 
     @Override
@@ -51,18 +42,18 @@ public class ConsumerModule extends AbstractModule {
     public Consumer<String, String> providesKafkaConsumer() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, configuration.getKafkaHost() + ":" + configuration.getKafkaPort());
+        //props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
+        //props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, configuration.getGroupIdConfig());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, configuration.getGROUP_ID_CONFIG());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, configuration.getMAX_POLL_RECORDS());
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, configuration.getMaxPollRecords());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, configuration.getOFFSET_RESET_EARLIER());
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, configuration.getOffsetResetEarlier());
         Consumer<String, String> consumer = new KafkaConsumer<>(props);
 
-        consumer.subscribe(Collections.singletonList(configuration.getTOPIC_NAME()));
-        consumer.subscribe(Arrays.asList("my-topic"));
+        //consumer.subscribe(Collections.singletonList(configuration.getTopicName()));
+        consumer.subscribe(Arrays.asList(configuration.getTopicName()));
         return consumer;
     }
 }

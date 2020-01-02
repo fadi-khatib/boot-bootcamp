@@ -5,30 +5,24 @@ public class ConsumerConfiguration {
     public ConsumerConfiguration(){
     }
 
-    // docker -java
-    public static final String configFilePath = "src/main/resources/consumer.config" ;
-    // local
-    public static final String additionalConfigFilePath = "Consumer/src/main/resources/consumer.config" ;
-    //elastic
+    public static final String DOCKER_CONFIG_FILEPATH = "src/main/resources/consumer.config" ;
+    public static final String LOCAL_CONFIG_FILEPATH = "Consumer/src/main/resources/consumer.config" ;
     private int elasticPort;
     private int additionalElasticPort;
     private String elasticHost;
-    //kafka
     private int kafkaPort;
     private String kafkaHost;
+    private String clientId;
+    private String topicName;
+    private String groupIdConfig;
+    private String offsetResetEarlier;
+    private Integer maxPollRecords;
 
-    private String CLIENT_ID;
-    private String TOPIC_NAME;
-    private String GROUP_ID_CONFIG;
-
-    private String OFFSET_RESET_EARLIER;
-    private Integer MAX_POLL_RECORDS;
-
-    public String getConfigFilePath(){
-        return  configFilePath;
+    public String getDOCKER_CONFIG_FILEPATH(){
+        return  DOCKER_CONFIG_FILEPATH;
     }
     public String getAdditionalConfigFilePath(){
-        return  additionalConfigFilePath;
+        return  LOCAL_CONFIG_FILEPATH;
     }
     public String getElasticHost(){
         return  elasticHost;
@@ -36,20 +30,20 @@ public class ConsumerConfiguration {
     public String getKafkaHost(){
         return  kafkaHost;
     }
-    public String getCLIENT_ID(){
-        return  CLIENT_ID;
+    public String getClientId(){
+        return  clientId;
     }
-    public String getTOPIC_NAME(){
-        return  TOPIC_NAME;
+    public String getTopicName(){
+        return  topicName;
     }
-    public String getGROUP_ID_CONFIG(){
-        return  GROUP_ID_CONFIG;
+    public String getGroupIdConfig(){
+        return  groupIdConfig;
     }
-    public String getOFFSET_RESET_EARLIER(){
-        return  OFFSET_RESET_EARLIER;
+    public String getOffsetResetEarlier(){
+        return  offsetResetEarlier;
     }
-    public Integer getMAX_POLL_RECORDS(){
-        return  MAX_POLL_RECORDS;
+    public Integer getMaxPollRecords(){
+        return  maxPollRecords;
     }
     public int getElasticPort(){
         return  elasticPort;

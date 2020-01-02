@@ -2,7 +2,7 @@ package bootTest;
 
 
 import boot.Msg;
-import com.google.inject.Injector;
+//import com.google.inject.Injector;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -18,9 +18,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
+
 public class IntegrationTest {
     public HttpRequestHandler httpRequestHandler;
-    public static Injector injector;
 
     @Before
     public void beforeAllTests(){
@@ -74,3 +74,14 @@ public class IntegrationTest {
     }
 
 }
+//import static org.awaitility.Awaitility.await;
+//import static org.junit.Assert.*;
+//        await().atMost(Duration.ofSeconds(3)).until(()->{
+//            Response searchRes = httpRequestHandler.getRequest();
+//            assertNotNull(searchResponse);
+//            String entity = searchResponse.readEntity(String.class);
+//            boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
+//            boolean isMessageFound = entity.indexOf(randomString) > -1;
+//
+//            return isMessageIndexed && isMessageFound;
+//        });

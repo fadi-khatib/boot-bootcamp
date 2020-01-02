@@ -1,31 +1,21 @@
 package boot;
 
-import org.json.simple.JSONObject;
-
-import java.io.File;
-import util.InfraUtil;
-
-
-
 public class ServerConfiguration {
 
-    public ServerConfiguration(){
-    }
-    public static final String configFilePath = "src/main/resources/server.config" ;
-    public static final String additionalConfigFilePath = "logsHandler/src/main/resources/server.config" ;
+    public ServerConfiguration(){ }
+
+    public static final String DOCKER_CONFIG_FILEPATH = "src/main/resources/server.config" ;
+    public static final String LOCAL_CONFIG_FILEPATH = "logsHandler/src/main/resources/server.config" ;
 
     private int port;
     private int elasticPort;
     private int additionalElasticPort;
     private String elasticHost;
-
     private int kafkaPort;
     private String kafkaHost;
-    private String CLIENT_ID;
+    private String clientId;
 
-    public String getCLIENT_ID() {
-        return CLIENT_ID;
-    }
+    public String getClientId() {return clientId;}
     public int getPort() {
         return port;
     }

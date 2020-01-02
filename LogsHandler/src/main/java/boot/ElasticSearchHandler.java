@@ -18,78 +18,78 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 @Singleton
 public class ElasticSearchHandler {
 
+    private static Logger logger = LogManager.getLogger(ElasticSearchHandler.class);
     private Msg msg;
     private String index;
-    private Map<String,String> map;
-    private   RestHighLevelClient client;
+    private Map<String, String> map;
+    private RestHighLevelClient client;
 
     @Inject
-    public ElasticSearchHandler (RestHighLevelClient client){
+    public ElasticSearchHandler(RestHighLevelClient client) {
         this.client = client;
     }
 
-    public IndexResponse index(){
+    public IndexResponse index() {
         IndexRequest request = new IndexRequest(index, "_doc");
-        request.source(new Gson().toJson(map) ,XContentType.JSON);
-        IndexResponse indexResponse = null ;
-        try{
-            indexResponse= client.index((IndexRequest) request, RequestOptions.DEFAULT);
-            System.out.println("elastic searchhandler.index:  "+indexResponse.status().toString());
-
-        }catch(Exception e){
-            System.out.println(e.getMessage());
+        request.source(new Gson().toJson(map), XContentType.JSON);
+        IndexResponse indexResponse = null;
+        try {
+            indexResponse = client.index((IndexRequest) request, RequestOptions.DEFAULT);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
         return indexResponse;
     }
 
-    public String search(SearchRequest searchRequest){
+    public String search(SearchRequest searchRequest) {
         SearchResponse searchResponse = null;
         try {
             searchResponse = client.search((SearchRequest) searchRequest, RequestOptions.DEFAULT);
-            SearchHits hits = searchResponse.getHits();
-        }catch(Exception e){
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             return e.getMessage();
         }
+        SearchHits hits = searchResponse.getHits();
         return getQueryHits(searchResponse);
     }
 
-    public SearchRequest buildSearchQuery(Map<String, String> map , String index ){
+    public SearchRequest buildSearchQuery(Map<String, String> map, String index) {
         SearchRequest searchRequest = new SearchRequest(index);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-        for (Map.Entry<String, String> entry : map.entrySet()){
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             boolQuery.must(QueryBuilders.matchQuery(entry.getKey(), entry.getValue()));
         }
         searchSourceBuilder.query(boolQuery);
         searchRequest.source(searchSourceBuilder);
         return searchRequest;
     }
-    public String getQueryHits(SearchResponse res ){
-        StringBuilder builder = new StringBuilder();
-        try {
-            SearchHits searchHits = res.getHits();
 
-            for (SearchHit hit : searchHits) {
-                builder.append(hit.getSourceAsString() + "\n");
-            }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return e.getMessage();
+    public String getQueryHits(SearchResponse res) {
+        StringBuilder builder = new StringBuilder();
+        SearchHits searchHits = res.getHits();
+        for (SearchHit hit : searchHits) {
+            builder.append(hit.getSourceAsString() + "\n");
         }
         return builder.toString();
     }
 
-    public void setMsg(Msg msg){
+    public void setMsg(Msg msg) {
         this.msg = msg;
     }
-    public void setIndex(String index){
+
+    public void setIndex(String index) {
         this.index = index;
     }
-    public void setMap(Map map){
+
+    public void setMap(Map map) {
         this.map = map;
     }
 }

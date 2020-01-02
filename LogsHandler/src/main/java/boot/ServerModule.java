@@ -23,20 +23,11 @@ import util.InfraUtil;
 
 
 public class ServerModule extends AbstractModule {
-    JerseyConfiguration configuration ;
-    ServerConfiguration serverConfiguration;
+    private final JerseyConfiguration configuration ;
+    private final ServerConfiguration serverConfiguration;
     @Inject
     public ServerModule(){
-        try {
-            serverConfiguration = InfraUtil.load(ServerConfiguration.configFilePath, ServerConfiguration.class);
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            try {
-                serverConfiguration = InfraUtil.load(ServerConfiguration.configFilePath, ServerConfiguration.class);
-            }catch(Exception exception){
-                System.out.println(exception.getMessage());
-            }
-        }
+        serverConfiguration = InfraUtil.load(ServerConfiguration.DOCKER_CONFIG_FILEPATH, ServerConfiguration.class);
         configuration = JerseyConfiguration.builder()
                 .addPackage("boot")
                 .addPort(serverConfiguration.getPort())
@@ -61,9 +52,9 @@ public class ServerModule extends AbstractModule {
     @Provides
     public Properties providesProperties() {
         Properties props = new Properties();
-        String KAFKA_BROKERS = serverConfiguration.getKafkaHost()+":"+serverConfiguration.getKafkaPort();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BROKERS);
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, serverConfiguration.getCLIENT_ID());
+        String kafkaBrokers = serverConfiguration.getKafkaHost()+":"+serverConfiguration.getKafkaPort();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, serverConfiguration.getClientId());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return props;

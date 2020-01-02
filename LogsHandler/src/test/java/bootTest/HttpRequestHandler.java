@@ -18,7 +18,7 @@ public class HttpRequestHandler {
     private String endPoint ;
     private String path;
 
-    @Inject
+
     public HttpRequestHandler(Client client ,Msg msg ,String endPoint ){
         this.client = client;
         this.msg = msg;
