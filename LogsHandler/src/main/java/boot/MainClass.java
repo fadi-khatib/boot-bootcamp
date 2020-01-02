@@ -12,9 +12,6 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception{
         System.out.println("hi server");
-        // configuration
-        ServerConfiguration SConfig = new ServerConfiguration();
-        // create injector
         ServerModule serverModule =  new ServerModule();
         Injector injector = Guice.createInjector(serverModule);
         // start Jerseyserver

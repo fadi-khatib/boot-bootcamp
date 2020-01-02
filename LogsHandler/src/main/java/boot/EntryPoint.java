@@ -1,5 +1,5 @@
 package boot;
-//Now we need to create a simple test REST service class boot.bootcamp.EntryPoint:
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -22,14 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import Producer.KafkaPublisher;
-import org.json.simple.JSONObject;
 import util.InfraUtil;
 
 @Path("entry-point")
 public class EntryPoint {
     public static Logger logger = LogManager.getLogger(EntryPoint.class);
     private static int count = 0;
-    private static String logMessage = new String(ServerConfiguration.logMessage);
     private final ElasticSearchHandler elasticsearchClient;
     private final KafkaPublisher kafkaPublisher;
 
@@ -83,11 +81,9 @@ public class EntryPoint {
         String result = "";
         String messageId = "";
         IndexResponse res = null ;
-
         Map<String, String> map = new HashMap<>();
         map.put("message", jsonObject.get("message").toString());
         map.put("User-Agent", userAgent);
-
             elasticsearchClient.setMap(map);
             elasticsearchClient.setIndex("index");
             try {
@@ -109,9 +105,7 @@ public class EntryPoint {
         MultivaluedMap<String, String> query = uriInfo.getQueryParameters();
         Map<String, String> map = new HashMap<>();
         map.put("message",query.get("message").get(0) );
-        //map.put("User-Agent", query.get("header").get(0));
         SearchRequest searchRequest = elasticsearchClient.buildSearchQuery(map,"index");
-        //SearchResponse searchResponse = null;
         try {
             result = elasticsearchClient.search(searchRequest);
             System.out.println("elastic search response: "+result.toString());
@@ -120,7 +114,6 @@ public class EntryPoint {
             return e.getMessage();
         }
         return result;
-
     }
 
 }

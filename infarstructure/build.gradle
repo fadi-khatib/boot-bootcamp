@@ -17,17 +17,3 @@ dependencies {
     compile "com.googlecode.json-simple:json-simple:1.1.1"
 
 }
-
-
-Consumer/build.gradle
-
-sudo git add Consumer/src/main/java/Consumer/ConsumerModule.java
-sudo git add Consumer/src/main/java/Consumer/KafkaReceiver.java
-sudo git add  Consumer/src/main/java/Consumer/MainClass.java
-sudo git add  LogsHandler/build.gradle
-sudo git add  LogsHandler/src/main/java/boot/EntryPoint.java
-sudo git add  LogsHandler/src/main/java/boot/MainClass.java
-sudo git add LogsHandler/src/main/java/boot/ServerConfiguration.java
-sudo git add settings.gradle
-
-infarstructure/

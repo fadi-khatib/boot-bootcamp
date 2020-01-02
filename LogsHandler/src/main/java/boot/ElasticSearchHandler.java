@@ -1,13 +1,11 @@
 package boot;
 
 import com.google.gson.Gson;
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -26,21 +24,15 @@ public class ElasticSearchHandler {
     private Msg msg;
     private String index;
     private Map<String,String> map;
+    private   RestHighLevelClient client;
 
-
-    private  final RestHighLevelClient client = new RestHighLevelClient(
-            RestClient.builder(
-                    new HttpHost(ServerConfiguration.elasticHost, ServerConfiguration.elasticPort, "http"),
-                    new HttpHost(ServerConfiguration.elasticHost, ServerConfiguration.additionalElasticPort, "http")));
     @Inject
-    public ElasticSearchHandler (){
-        this.msg = new Msg("defult bootcamp message");
-        this.index = "defult";
+    public ElasticSearchHandler (RestHighLevelClient client){
+        this.client = client;
     }
 
     public IndexResponse index(){
         IndexRequest request = new IndexRequest(index, "_doc");
-
         request.source(new Gson().toJson(map) ,XContentType.JSON);
         IndexResponse indexResponse = null ;
         try{
@@ -94,7 +86,6 @@ public class ElasticSearchHandler {
     public void setMsg(Msg msg){
         this.msg = msg;
     }
-
     public void setIndex(String index){
         this.index = index;
     }
