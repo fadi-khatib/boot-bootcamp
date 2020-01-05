@@ -6,7 +6,6 @@ import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -14,7 +13,6 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 
 import util.InfraUtil;
@@ -32,7 +30,6 @@ public class ConsumerModule extends AbstractModule {
     protected void configure() {
         binder().requireExplicitBindings();
         bind(KafkaReceiver.class);
-        bind(BulkRequest.class);
     }
 
     @Provides

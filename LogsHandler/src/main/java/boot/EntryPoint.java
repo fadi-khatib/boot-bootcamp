@@ -41,16 +41,14 @@ public class EntryPoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/send/index")
-    public String send(String jsonString, @Context UriInfo uriInfo, @HeaderParam("user-agent") String userAgent) {
+    @Path("index")
+    public String sendToProducerConstant(String jsonString, @Context UriInfo uriInfo, @HeaderParam("user-agent") String userAgent){
         JsonObject jsonObject = InfraUtil.stringToJson(jsonString);
         Map<String, String> map = new HashMap<>();
         map.put("message", jsonObject.get("message").toString());
         map.put("User-Agent", userAgent);
-        elasticsearchClient.setMap(map);
-        elasticsearchClient.setIndex("index");
-        IndexResponse res = elasticsearchClient.index();
-        return res.status().toString();
+        String res = kafkaPublisher.produce(map);
+        return res;
     }
 
     @GET

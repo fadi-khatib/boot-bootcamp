@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -28,17 +27,16 @@ public class KafkaReceiver {
     private static Logger logger = LogManager.getLogger(KafkaReceiver.class);
     private final RestHighLevelClient elasticSearchClient;
     private final Consumer<String, String> consumer;
-    private final BulkRequest bulkRequest;
 
     @Inject
-    public KafkaReceiver(RestHighLevelClient elasticSearchClient, Consumer<String, String> consumer, BulkRequest bulkRequest) {
+    public KafkaReceiver(RestHighLevelClient elasticSearchClient, Consumer<String, String> consumer) {
         this.elasticSearchClient = elasticSearchClient;
         this.consumer = consumer;
-        this.bulkRequest = bulkRequest;
     }
 
     public void start() {
         Map<String, String> map = new HashMap<>();
+        BulkRequest bulkRequest = new BulkRequest();
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
@@ -49,12 +47,14 @@ public class KafkaReceiver {
                 map.put("User-Agent", jObject.get("User-Agent").toString());
                 bulkRequest.add(new IndexRequest("index", "_doc").source(new Gson().toJson(map), XContentType.JSON));
             }
-            indexBulk();
+            if (bulkRequest.numberOfActions() > 0) {
+                indexBulk(bulkRequest);
+                bulkRequest = new BulkRequest();
+            }
         }
     }
 
-    private void indexBulk() {
-        if (bulkRequest.numberOfActions() > 0) {
+    private void indexBulk(BulkRequest bulkRequest) {
             try {
                 BulkResponse bulkResp = elasticSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
                 if (bulkResp.hasFailures()) {
@@ -65,7 +65,6 @@ public class KafkaReceiver {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
     }
 }
 
