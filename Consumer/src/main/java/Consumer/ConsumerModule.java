@@ -6,6 +6,7 @@ import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -29,7 +30,9 @@ public class ConsumerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        binder().requireExplicitBindings();
         bind(KafkaReceiver.class);
+        bind(BulkRequest.class);
     }
 
     @Provides
@@ -42,17 +45,12 @@ public class ConsumerModule extends AbstractModule {
     public Consumer<String, String> providesKafkaConsumer() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, configuration.getKafkaHost() + ":" + configuration.getKafkaPort());
-        //props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
-        //props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, configuration.getGroupIdConfig());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, configuration.getMaxPollRecords());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, configuration.getOffsetResetEarlier());
         Consumer<String, String> consumer = new KafkaConsumer<>(props);
-
-        //consumer.subscribe(Collections.singletonList(configuration.getTopicName()));
         consumer.subscribe(Arrays.asList(configuration.getTopicName()));
         return consumer;
     }

@@ -21,7 +21,6 @@ shadowJar {
         attributes 'Main-Class': "$mainClassName"
     }
 
-    // What the fuck is this?
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
 }
 dependencies {
@@ -38,6 +37,8 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile 'org.slf4j:slf4j-api:1.7.5'
     compile 'org.slf4j:slf4j-simple:1.6.4'
+
+    compile 'org.apache.logging.log4j:log4j-core:2.9.0'
 
     compile project(':infarstructure:')
 

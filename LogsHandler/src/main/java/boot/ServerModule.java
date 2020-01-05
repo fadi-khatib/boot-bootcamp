@@ -2,6 +2,7 @@ package boot;
 
 import Producer.KafkaPublisher;
 import com.google.inject.AbstractModule;
+
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -23,18 +24,20 @@ import util.InfraUtil;
 
 
 public class ServerModule extends AbstractModule {
-    private final JerseyConfiguration configuration ;
+    private final JerseyConfiguration configuration;
     private final ServerConfiguration serverConfiguration;
+
     @Inject
-    public ServerModule(){
+    public ServerModule() {
         serverConfiguration = InfraUtil.load(ServerConfiguration.DOCKER_CONFIG_FILEPATH, ServerConfiguration.class);
         configuration = JerseyConfiguration.builder()
                 .addPackage("boot")
                 .addPort(serverConfiguration.getPort())
                 .build();
     }
+
     @Override
-    protected void configure(){
+    protected void configure() {
         binder().requireExplicitBindings();
         install(new JerseyModule(configuration));
         bind(EntryPoint.class);
@@ -49,18 +52,20 @@ public class ServerModule extends AbstractModule {
         Client client = ClientBuilder.newClient(config);
         return client;
     }
+
     @Provides
     public Properties providesProperties() {
         Properties props = new Properties();
-        String kafkaBrokers = serverConfiguration.getKafkaHost()+":"+serverConfiguration.getKafkaPort();
+        String kafkaBrokers = serverConfiguration.getKafkaHost() + ":" + serverConfiguration.getKafkaPort();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
         props.put(ProducerConfig.CLIENT_ID_CONFIG, serverConfiguration.getClientId());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return props;
     }
+
     @Provides
-    public RestHighLevelClient providesRestHighLevelClient(){
+    public RestHighLevelClient providesRestHighLevelClient() {
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getElasticPort(), "http"),

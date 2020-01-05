@@ -37,33 +37,13 @@ public class EntryPoint {
         this.kafkaPublisher = kafkaPublisher;
     }
 
-    //for internal server test
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("test")
-    public String test() {
-        return "logshandler . my server is runing fine";
-    }
-
-    // indexing constant massage to "index"
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("index")
-    public String sendToProducerConstant() {
-        Map<String, String> map = new HashMap<>();
-        map.put("message", "my new message post ");
-        map.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X)");
-        String res = kafkaPublisher.produce(map);
-        return res;
-    }
-
     // index message (from post request json) to index
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/send/index")
     public String send(String jsonString, @Context UriInfo uriInfo, @HeaderParam("user-agent") String userAgent) {
-        JsonObject jsonObject = InfraUtil.StringToJson(jsonString);
+        JsonObject jsonObject = InfraUtil.stringToJson(jsonString);
         Map<String, String> map = new HashMap<>();
         map.put("message", jsonObject.get("message").toString());
         map.put("User-Agent", userAgent);
@@ -75,7 +55,7 @@ public class EntryPoint {
 
     @GET
     @Path("search")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public String search(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> query = uriInfo.getQueryParameters();
         Map<String, String> map = new HashMap<>();

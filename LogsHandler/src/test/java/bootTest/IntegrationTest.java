@@ -1,27 +1,31 @@
 package bootTest;
 
 
-import boot.Msg;
-//import com.google.inject.Injector;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import javax.ws.rs.client.WebTarget;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import util.InfraUtil;
+import javax.ws.rs.client.Entity;
+
 
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
 
 public class IntegrationTest {
-    public HttpRequestHandler httpRequestHandler;
-
+    private String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X)";
+    private String REST_API_URI = "http://localhost:8080/entry-point/";
     @Before
     public void beforeAllTests(){
         System.out.println("Hi Test");
@@ -29,13 +33,15 @@ public class IntegrationTest {
 
     @Test
     public void testEndToEnd()  {
-        ClientConfig config = new ClientConfig();
-        config.register(JacksonJsonProvider.class);
-        Client client = ClientBuilder.newClient(config);
         String key = RandomStringUtils.random(15, false, true);
-        httpRequestHandler = new HttpRequestHandler(client , new Msg(key) ,"http://localhost:8080" );
-        httpRequestHandler.setPath("/entry-point/send/index");
-        Response postResponse = httpRequestHandler.postRequest();
+        String jsonObjectAsString = "{\"message\":\"" + key + "\"}";
+
+        WebTarget webTarget = ClientBuilder.newClient().target(REST_API_URI);
+        Response postResponse =  webTarget.path("send/index")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.USER_AGENT, userAgent)
+                .post(Entity.json(jsonObjectAsString));
+
         if (postResponse.getStatus() != 200){
             System.out.println("index fail Status: ");
             System.out.println(postResponse.getStatus());
@@ -45,17 +51,22 @@ public class IntegrationTest {
         String result = postResponse.toString()+ "\n" + postResponse.readEntity(String.class);
         System.out.println(result);
 
-        httpRequestHandler.setPath("/entry-point/search?message="+key);//+"&header=Macintosh"
-
         try {
             Thread.sleep(1000 * 7);
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-        Response searchRes = httpRequestHandler.getRequest();
-        assertNotNull(searchRes);
-        String entity = searchRes.readEntity(String.class);
-        boolean isMessageIndexed = searchRes.getStatus() == HttpURLConnection.HTTP_OK;
+
+        String header   = "Macintosh";
+        Response searchResponse = webTarget.path("search")
+                .queryParam("message", key)
+                .queryParam("header", header)
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+                //.queryParam("header", header)
+        assertNotNull(searchResponse);
+        String entity = searchResponse.readEntity(String.class);
+        boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
         boolean isMessageFound = entity.indexOf(key) > -1;
         System.out.println("key index");
         System.out.println(entity.indexOf(key));
@@ -74,14 +85,3 @@ public class IntegrationTest {
     }
 
 }
-//import static org.awaitility.Awaitility.await;
-//import static org.junit.Assert.*;
-//        await().atMost(Duration.ofSeconds(3)).until(()->{
-//            Response searchRes = httpRequestHandler.getRequest();
-//            assertNotNull(searchResponse);
-//            String entity = searchResponse.readEntity(String.class);
-//            boolean isMessageIndexed = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
-//            boolean isMessageFound = entity.indexOf(randomString) > -1;
-//
-//            return isMessageIndexed && isMessageFound;
-//        });

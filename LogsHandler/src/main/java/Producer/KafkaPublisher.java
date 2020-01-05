@@ -35,7 +35,6 @@ public class KafkaPublisher {
             logger.error(e);
             return e.getMessage();
         }
-        producer.flush();
         return "sent to kafka";
     }
 

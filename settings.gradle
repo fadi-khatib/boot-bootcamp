@@ -1,6 +1,5 @@
 rootProject.name = 'gradle'
 include 'Consumer'
-include 'Producer'
 include 'LogsHandler'
 include 'infarstructure'
 

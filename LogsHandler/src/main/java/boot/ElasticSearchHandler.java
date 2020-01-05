@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 public class ElasticSearchHandler {
 
     private static Logger logger = LogManager.getLogger(ElasticSearchHandler.class);
-    private Msg msg;
     private String index;
     private Map<String, String> map;
     private RestHighLevelClient client;
@@ -72,7 +71,7 @@ public class ElasticSearchHandler {
         return searchRequest;
     }
 
-    public String getQueryHits(SearchResponse res) {
+    private String getQueryHits(SearchResponse res) {
         StringBuilder builder = new StringBuilder();
         SearchHits searchHits = res.getHits();
         for (SearchHit hit : searchHits) {
@@ -81,9 +80,6 @@ public class ElasticSearchHandler {
         return builder.toString();
     }
 
-    public void setMsg(Msg msg) {
-        this.msg = msg;
-    }
 
     public void setIndex(String index) {
         this.index = index;
