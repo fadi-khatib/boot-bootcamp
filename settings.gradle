@@ -1,0 +1,5 @@
+rootProject.name = 'gradle'
+include 'Consumer'
+include 'LogsHandler'
+include 'infarstructure'
+
