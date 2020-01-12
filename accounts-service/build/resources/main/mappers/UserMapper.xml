@@ -1,0 +1,43 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mappers.UserMapper">
+    <resultMap id="userMap" type="models.User">
+        <constructor>
+            <idArg column="ID" javaType="int"/>
+            <arg column="NAME" javaType="String"/>
+            <arg column="TOKEN" javaType="String"/>
+            <arg column="ES_INDEX_NAME" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="all" resultMap="userMap">
+        SELECT * FROM Users ORDER BY ID
+    </select>
+
+    <select id="getUserByToken" parameterType="String" resultMap="userMap">
+        SELECT * FROM Users WHERE TOKEN = #{value}
+    </select>
+
+    <insert id = "insert" parameterType = "models.User">
+        INSERT INTO Users ( NAME, TOKEN ,ES_INDEX_NAME) VALUES (#{name}, #{token}, #{esIndexName} );
+        <selectKey keyProperty = "TOKEN" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+
+    <insert id="createNewTableIfNotExists" parameterType="String" >
+        CREATE TABLE IF NOT EXISTS Users
+        ( NAME varchar(100) NOT NULL,
+        ID int(10) NOT NULL AUTO_INCREMENT,
+        TOKEN varchar(100) NOT NULL,
+        ES_INDEX_NAME varchar(100) NOT NULL,
+        PRIMARY KEY ( ID ),
+        UNIQUE KEY ( TOKEN , ES_INDEX_NAME )
+        )
+        ENGINE=InnoDB;
+    </insert>
+</mapper>
+
+

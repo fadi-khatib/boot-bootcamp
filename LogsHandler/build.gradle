@@ -15,7 +15,7 @@ repositories {
 
 ext {
     jettyVersion = '9.4.6.v20170531'
-    jerseyVersion = '2.27'
+    jerseyVersion = '2.29'
 }
 
 sourceSets {

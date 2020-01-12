@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
+
+group 'boot-bootcamp'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+ext {
+    jettyVersion = '9.4.6.v20170531'
+    jerseyVersion = '2.27'
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = "main.MainClass"
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+
+    // What the fuck is this?
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // jetty jersy
+    compile "org.eclipse.jetty:jetty-server:2.29"
+    compile "org.eclipse.jetty:jetty-servlet:2.29"
+    compile "org.glassfish.jersey.core:jersey-server:2.29"
+    compile "org.glassfish.jersey.containers:jersey-container-servlet-core:2.29"
+    compile "org.glassfish.jersey.containers:jersey-container-jetty-http:2.29"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:2.29"
+    compile "org.glassfish.jersey.inject:jersey-hk2:2.29"
+    compile "org.glassfish.jersey.bundles.repackaged:jersey-guava:2.6"
+    compile "org.glassfish.jersey.media:jersey-media-moxy:2.29"
+
+    compile 'io.logz:guice-jersey:1.0.9'
+    compile 'com.google.inject:guice:4.0'
+
+    compile 'io.logz.log4j2:logzio-log4j2-appender:1.0.5'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.6.4'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.9.0'
+    compile "org.apache.commons:commons-lang3:3.3.2"
+
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    compile "com.googlecode.json-simple:json-simple:1.1.1"
+
+
+    //data base
+    compile group: 'org.mybatis', name: 'mybatis', version: '3.2.2'
+    compile "org.mybatis:mybatis-guice:3.10"
+    compile "mysql:mysql-connector-java:5.1.6"
+    compile "javax.xml.bind:jaxb-api:2.3.0"
+
+    // NoClassDefFoundError: javax/activation/DataSource
+    compile "javax.xml.bind:jaxb-api:2.3.0"
+    compile "com.sun.xml.bind:jaxb-core:2.3.0"
+    compile "com.sun.xml.bind:jaxb-impl:2.3.0"
+    compile "javax.activation:activation:1.1.1"
+
+    compile project(':infarstructure:')
+
+}

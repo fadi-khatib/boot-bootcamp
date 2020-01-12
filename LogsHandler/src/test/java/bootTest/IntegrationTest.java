@@ -1,5 +1,6 @@
 package bootTest;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.ws.rs.client.WebTarget;
@@ -25,6 +26,7 @@ import java.net.HttpURLConnection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import util.InfraUtil;
 
 
 public class IntegrationTest {
@@ -42,13 +44,28 @@ public class IntegrationTest {
     public void testEndToEnd() {
         String key = RandomStringUtils.random(15, false, true);
         String jsonObjectAsString = "{\"message\":\"" + key + "\"}";
+        String account = "{'accountName':'fadi'}";
 
-        Response postResponse = webTarget.path("/index")
+        //create account
+        Response postResponse = webTarget.path("/create-account")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.USER_AGENT, userAgent)
-                .post(Entity.json(jsonObjectAsString));
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .post(Entity.json(account));
         assertEquals(200, postResponse.getStatus());
 
+        String userJsonString = postResponse.readEntity(String.class);
+        JsonObject userJson = InfraUtil.stringToJson(userJsonString);
+        String esIndexName = userJson.get("esIndexName").getAsString();
+        String token = userJson.get("token").getAsString();
+
+
+        postResponse = webTarget.path("/index")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.USER_AGENT, userAgent)
+                .header("X-ACCOUNT-TOKEN", token)
+                .post(Entity.json(jsonObjectAsString));
+        assertEquals(200, postResponse.getStatus());
         String result = postResponse.toString() + "\n" + postResponse.readEntity(String.class);
         logger.debug(result);
 
@@ -56,15 +73,14 @@ public class IntegrationTest {
         String header = "Macintosh";
         await().atMost(Duration.ofSeconds(7)).until(() -> {
             Response searchResponse1 = webTarget.path("search")
-                    .queryParam("message", key)
-                    .queryParam("header", header)
                     .request(MediaType.APPLICATION_JSON)
+                    .header("X-ACCOUNT-TOKEN",token)
                     .get();
             assertNotNull(searchResponse1);
             String entity1 = searchResponse1.readEntity(String.class);
             boolean isMessageIndexed1 = searchResponse1.getStatus() == HttpURLConnection.HTTP_OK;
             boolean isMessageFound1 = entity1.indexOf(key) > -1;
-
+            System.out.println(entity1);
             return isMessageIndexed1 && isMessageFound1;
         });
 
