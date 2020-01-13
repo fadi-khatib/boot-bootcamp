@@ -16,13 +16,13 @@ public class ServerConfiguration {
     private String kafkaHost;
     private String clientId;
     private String accountsServiceHost;
-    private String accountsServicePort;
+    private int accountsServicePort;
 
     public String getAccountsServiceHost() {
         return accountsServiceHost;
     }
 
-    public String getAccountsServicePort() {
+    public int getAccountsServicePort() {
         return accountsServicePort;
     }
 

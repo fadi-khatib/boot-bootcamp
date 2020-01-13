@@ -6,18 +6,16 @@ public class ServerConfiguration {
     public ServerConfiguration() {
     }
 
-    //public static final String CONFIG_FILE_PATH = "accounts-service/src/main/resources/server.config";
-    public static final String CONFIG_FILE_PATH = "src/main/resources/server.config" ; //*local*
+    //public static final String CONFIG_FILE_PATH = "accounts-service/src/main/resources/server.config";//*local*
+    public static final String CONFIG_FILE_PATH = "src/main/resources/server.config" ;
 
-    // service configuration
     private int port;
-    // data base connection configurations
-    private int dataBasePort;//  3306
-    private String dataBaseHost;// "localhost"
-    private String dataBaseRootPassword;// "password"
-    private String DataBaseName; // "db"
-    private String dataBaseUser; // "user",
-    private String dataBasePassword; //"password"
+    private int dataBasePort;
+    private String dataBaseHost;
+    private String dataBaseRootPassword;
+    private String DataBaseName;
+    private String dataBaseUser;
+    private String dataBasePassword;
 
     public int getPort() {
         return port;

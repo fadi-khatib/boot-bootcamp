@@ -52,7 +52,7 @@ public class IntegrationTest {
                 .header(HttpHeaders.USER_AGENT, userAgent)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .post(Entity.json(account));
-        assertEquals(200, postResponse.getStatus());
+        assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.getStatus());
 
         String userJsonString = postResponse.readEntity(String.class);
         JsonObject userJson = InfraUtil.stringToJson(userJsonString);

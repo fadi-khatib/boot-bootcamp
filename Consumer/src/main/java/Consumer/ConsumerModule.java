@@ -12,6 +12,8 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import util.InfraUtil;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -49,4 +51,12 @@ public class ConsumerModule extends AbstractModule {
         consumer.subscribe(Arrays.asList(configuration.getTopicName()));
         return consumer;
     }
+
+    @Provides
+    public WebTarget providesAccountsServiceWebTarget() {
+        String accountServiceUri = "http://" + configuration.getAccountsServiceHost() + ":"
+                + configuration.getAccountsServicePort() + "/";
+        return ClientBuilder.newClient().target(accountServiceUri);
+    }
+
 }

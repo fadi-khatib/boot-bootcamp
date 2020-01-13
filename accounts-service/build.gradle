@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow'
+    id "application"
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 group 'boot-bootcamp'

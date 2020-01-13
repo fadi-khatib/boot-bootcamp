@@ -1,10 +1,5 @@
 package Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -20,16 +15,12 @@ import org.elasticsearch.common.xcontent.XContentType;
 import util.InfraUtil;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
@@ -38,48 +29,38 @@ public class KafkaReceiver {
     private static Logger logger = LogManager.getLogger(KafkaReceiver.class);
     private final RestHighLevelClient elasticSearchClient;
     private final Consumer<String, String> consumer;
+    private final WebTarget accountsServiceWebTarget;
+
 
     @Inject
-    public KafkaReceiver(RestHighLevelClient elasticSearchClient, Consumer<String, String> consumer) {
+    public KafkaReceiver(RestHighLevelClient elasticSearchClient, Consumer<String, String> consumer, WebTarget accountsServiceWebTarget) {
         this.elasticSearchClient = requireNonNull(elasticSearchClient);
         this.consumer = requireNonNull(consumer);
+        this.accountsServiceWebTarget = requireNonNull(accountsServiceWebTarget);
     }
 
     public void start() {
-        Map<String, String> map = new HashMap<>();
         while (true) {
             BulkRequest bulkRequest = new BulkRequest();
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
-                logger.debug("offset = %s , key = %s, value = %s \n", record.offset(), record.key(), record.value());
-                logger.debug("Record partition " + record.partition());
-                JsonObject jObject = InfraUtil.stringToJson(record.value());
-                map.put("message", jObject.get("message").toString());
-                map.put("User-Agent", jObject.get("User-Agent").toString());
-                System.out.println("record added to consumer");//*local*
-                System.out.println(jObject.get("X-ACCOUNT-TOKEN").getAsString());//*local*
-                ///////////////////////get user by token
-                WebTarget webTarget = ClientBuilder.newClient().target("http://accounts-service:8083/");
-                // return User
-                Response response = null;
-                response = webTarget.path("account/token")
-                        .request(MediaType.APPLICATION_JSON)
-                        .header("X-ACCOUNT-TOKEN", jObject.get("X-ACCOUNT-TOKEN").getAsString())
-                        .get();
-                String jsonString = response.readEntity(String.class);
-                System.out.println(jsonString);//*local*
+                JsonObject recordAsJson = InfraUtil.stringToJson(record.value());
+                String accountToken = recordAsJson.get("X-ACCOUNT-TOKEN").getAsString();
+                recordAsJson.remove("X-ACCOUNT-TOKEN");
 
-                if (response.getStatus() == 200) {
-                    //Object O = response.getEntity();
-                    JsonObject JSONObject = InfraUtil.stringToJson(jsonString);
-                    String esIndexName = JSONObject.get("esIndexName").getAsString();
-                    System.out.println("esIndex name in consumer get it from account services");
-                    System.out.println(esIndexName);
-                    bulkRequest.add(new IndexRequest(esIndexName, "_doc").source(new Gson().toJson(map), XContentType.JSON));
-                    //response= sendToKafka(jsonString,"Mozilla/5.0 (Macintosh; Intel Mac OS X)",accountToken );
+                Response accountByTokenResponse = accountsServiceWebTarget.path("account/token")
+                        .request(MediaType.APPLICATION_JSON)
+                        .header("X-ACCOUNT-TOKEN", accountToken)
+                        .get();
+
+                if (accountByTokenResponse.getStatus() == 200) {
+                    String responseEntity = accountByTokenResponse.readEntity(String.class);
+                    JsonObject responseEntityAsJson = InfraUtil.stringToJson(responseEntity);
+                    System.out.println(responseEntity);//*local*
+                    bulkRequest.add(new IndexRequest(responseEntityAsJson.get("esIndexName")
+                            .getAsString(), "_doc")
+                            .source(recordAsJson, XContentType.JSON));
                 }
-                /////////////////////////////////////////////
-                //bulkRequest.add(new IndexRequest(jObject.get("X-ACCOUNT-TOKEN").toString(), "_doc").source(new Gson().toJson(map), XContentType.JSON));
             }
             if (bulkRequest.numberOfActions() > 0) {
                 System.out.println(bulkRequest.numberOfActions());
@@ -104,4 +85,7 @@ public class KafkaReceiver {
         }
     }
 }
+
+//                System.out.println("offset = %s , key = %s, value = %s \n" +  record.offset() + record.key() + record.value());
+
 

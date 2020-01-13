@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -21,24 +20,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 
+import static java.util.Objects.requireNonNull;
+
 
 @Path("/")
 public class EntryPoint {
     public static Logger logger = LoggerFactory.getLogger(EntryPoint.class);
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Inject
     public EntryPoint(UserMapper userMapper) {
-        this.userMapper = userMapper;
+        this.userMapper = requireNonNull(userMapper);
         userMapper.createNewTableIfNotExists("Users");
-    }
-
-    //for internal server test
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("test")
-    public String test() {
-        return "logshandler . my server is runing fine";
     }
 
     // get account data by token
@@ -46,43 +39,38 @@ public class EntryPoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("account/token")
     public Response getAccountToken(@HeaderParam("X-ACCOUNT-TOKEN") String accountToken) {
-        System.out.println(accountToken);
-        User user = (User)userMapper.getUserByToken(accountToken);
-        System.out.println(user.toString());//*local*
-        Gson gson = new Gson();
-        String json = gson.toJson(user);
-        System.out.println(json);//*local*
-
-        return Response.status(HttpURLConnection.HTTP_OK).entity(json).build();
+        User userByToken = (User)userMapper.getUserByToken(accountToken);
+        if ( userByToken != null) {
+            Gson gson = new Gson();
+            String json = gson.toJson(userByToken);
+            return Response.status(HttpURLConnection.HTTP_OK).entity(json).build();
+        }
+        return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity("Account-token not found").build();
     }
 
     // Create new Account
-    // return id, name, token, esIndexName
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("create-account")
-    public Response createAccount(String jsonString) {
-        JsonObject jsonObject = InfraUtil.stringToJson(jsonString);
-        String accountName = jsonObject.get("accountName").getAsString();
+    public Response createAccount(String accountStringJson) {
+        JsonObject accountJson = InfraUtil.stringToJson(accountStringJson);
+        User newUser = createUserWithName( accountJson.get("accountName").getAsString());
+        userMapper.insert(newUser);
+        User userByToken = userMapper.getUserByToken(newUser.getToken());
+        if ( userByToken != null){
+            Gson gson = new Gson();
+            String userJson = gson.toJson(userByToken);
+            return Response.status(HttpURLConnection.HTTP_CREATED).entity(userJson).build();
+        }
+        return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity("Could not create new account").build();
+    }
+
+    private User createUserWithName(String accountName){
         String token = RandomStringUtils.random(20, false, true);
         String esIndexName = "logz-" + RandomStringUtils.random(20, false, true);
-        int sqlStatus = userMapper.insert(new User(accountName, token, esIndexName));
-        System.out.println(token);//*local*
-        User user = userMapper.getUserByToken(token);
-        System.out.println(user.toString());//*local*
-        Gson gson = new Gson();
-        String json = gson.toJson(user);
-        if (sqlStatus > 0){
-//            Gson gson = new Gson();
-//            String json = gson.toJson(user);
-//            JsonObject JSONObject =  InfraUtil.stringToJson(json);
-            return Response.status(HttpURLConnection.HTTP_OK).entity(json).build();
-        }
-        return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(json).build();
-
-
-
+        return new User(accountName, token, esIndexName);
     }
+
 
 }

@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import io.logz.guice.jersey.JerseyModule;
 import io.logz.guice.jersey.configuration.JerseyConfiguration;
-//import mappers.UserMapper;
 import modules.MyBatisModule;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
@@ -15,12 +14,12 @@ import javax.ws.rs.client.ClientBuilder;
 import util.InfraUtil;
 
 public class ServerModule extends AbstractModule {
-    JerseyConfiguration configuration;
-    ServerConfiguration serverConfiguration;
+    private final JerseyConfiguration configuration;
+    private final ServerConfiguration serverConfiguration;
 
     @Inject
     public ServerModule() {
-        serverConfiguration = InfraUtil.load(serverConfiguration.CONFIG_FILE_PATH, ServerConfiguration.class);
+        serverConfiguration = InfraUtil.load(ServerConfiguration.CONFIG_FILE_PATH, ServerConfiguration.class);
         configuration = JerseyConfiguration.builder()
                 .addPackage("main")
                 .addPort(serverConfiguration.getPort())
@@ -31,9 +30,8 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
         //binder().requireExplicitBindings();
         install(new JerseyModule(configuration));
-        install(new MyBatisModule());
+        install(new MyBatisModule(serverConfiguration));
         bind(EntryPoint.class);
-
     }
 
     @Provides

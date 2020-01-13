@@ -18,7 +18,6 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -36,7 +35,7 @@ public class EntryPoint {
     public static Logger logger = LogManager.getLogger(EntryPoint.class);
     private final ElasticSearchHandler elasticSearchClient;
     private final Producer<String, String> producer;
-    private WebTarget accountsServiceWebTarget;
+    private final WebTarget accountsServiceWebTarget;
 
     @Inject
     @Singleton

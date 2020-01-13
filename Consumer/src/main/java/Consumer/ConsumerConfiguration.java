@@ -14,7 +14,16 @@ public class ConsumerConfiguration {
     private String topicName;
     private String groupIdConfig;
     private String offsetResetEarlier;
+    private String accountsServiceHost;
+    private int accountsServicePort;
 
+    public String getAccountsServiceHost() {
+        return accountsServiceHost;
+    }
+
+    public int getAccountsServicePort() {
+        return accountsServicePort;
+    }
 
     public String getElasticHost() {
         return elasticHost;
