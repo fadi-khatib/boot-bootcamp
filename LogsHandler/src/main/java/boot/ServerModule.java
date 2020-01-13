@@ -16,6 +16,8 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 import util.InfraUtil;
 
+import javax.ws.rs.client.WebTarget;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
@@ -73,4 +75,12 @@ public class ServerModule extends AbstractModule {
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getAdditionalElasticPort(), "http")));
         return client;
     }
+
+    @Provides
+    public WebTarget providesAccountsServiceWebTarget() {
+        String accountServiceUri = "http://" + serverConfiguration.getAccountsServiceHost() + ":"
+                + serverConfiguration.getAccountsServicePort() + "/";
+        return ClientBuilder.newClient().target(accountServiceUri);
+    }
+
 }

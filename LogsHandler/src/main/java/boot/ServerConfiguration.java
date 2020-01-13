@@ -15,6 +15,16 @@ public class ServerConfiguration {
     private int kafkaPort;
     private String kafkaHost;
     private String clientId;
+    private String accountsServiceHost;
+    private String accountsServicePort;
+
+    public String getAccountsServiceHost() {
+        return accountsServiceHost;
+    }
+
+    public String getAccountsServicePort() {
+        return accountsServicePort;
+    }
 
     public String getClientId() {
         return clientId;

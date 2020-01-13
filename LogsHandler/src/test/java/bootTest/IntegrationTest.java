@@ -60,25 +60,28 @@ public class IntegrationTest {
         String token = userJson.get("token").getAsString();
 
 
-        postResponse = webTarget.path("/index")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.USER_AGENT, userAgent)
-                .header("X-ACCOUNT-TOKEN", token)
-                .post(Entity.json(jsonObjectAsString));
-        assertEquals(200, postResponse.getStatus());
-        String result = postResponse.toString() + "\n" + postResponse.readEntity(String.class);
-        logger.debug(result);
+        await().atMost(Duration.ofSeconds(7)).until(() -> {
+            Response indexResponse = webTarget.path("/index")
+                    .request(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.USER_AGENT, userAgent)
+                    .header("X-ACCOUNT-TOKEN", token)
+                    .post(Entity.json(jsonObjectAsString));
+            assertNotNull(indexResponse);
+            return (200 == indexResponse.getStatus());
+        });
+//        String result = postResponse.toString() + "\n" + postResponse.readEntity(String.class);
+//        logger.debug(result);
 
 
         String header = "Macintosh";
         await().atMost(Duration.ofSeconds(7)).until(() -> {
-            Response searchResponse1 = webTarget.path("search")
+            Response searchResponse = webTarget.path("search")
                     .request(MediaType.APPLICATION_JSON)
-                    .header("X-ACCOUNT-TOKEN",token)
+                    .header("X-ACCOUNT-TOKEN", token)
                     .get();
-            assertNotNull(searchResponse1);
-            String entity1 = searchResponse1.readEntity(String.class);
-            boolean isMessageIndexed1 = searchResponse1.getStatus() == HttpURLConnection.HTTP_OK;
+            assertNotNull(searchResponse);
+            String entity1 = searchResponse.readEntity(String.class);
+            boolean isMessageIndexed1 = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
             boolean isMessageFound1 = entity1.indexOf(key) > -1;
             System.out.println(entity1);
             return isMessageIndexed1 && isMessageFound1;
