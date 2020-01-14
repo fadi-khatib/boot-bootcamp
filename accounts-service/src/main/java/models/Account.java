@@ -1,20 +1,20 @@
 package models;
 
-public class User {
+public class Account {
     private Integer id;
     private String name;
     private String token;
     private String esIndexName;
-    public User(){
+    public Account(){
 
     }
-    public User( Integer id, String name, String token, String esIndexName ) {
+    public Account(Integer id, String name, String token, String esIndexName ) {
         this.name = name;
         this.token = token;
         this.esIndexName = esIndexName;
         this.id = id;
     }
-    public User(String name, String token, String esIndexName) {
+    public Account(String name, String token, String esIndexName) {
         this.name = name;
         this.token = token;
         this.esIndexName = esIndexName;

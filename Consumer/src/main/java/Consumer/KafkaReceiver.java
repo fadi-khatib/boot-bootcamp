@@ -51,9 +51,9 @@ public class KafkaReceiver {
                 messageAsJson.remove("X-ACCOUNT-TOKEN");
 
                 if (accountByTokenResponse.getStatus() == 200) {
-                    String userByToken = accountByTokenResponse.readEntity(String.class);
-                    JsonObject userJsonByToken = InfraUtil.stringToJson(userByToken);
-                    bulkRequest.add(new IndexRequest(userJsonByToken.get("esIndexName")
+                    String accountByToken = accountByTokenResponse.readEntity(String.class);
+                    JsonObject accountJsonByToken = InfraUtil.stringToJson(accountByToken);
+                    bulkRequest.add(new IndexRequest(accountJsonByToken.get("esIndexName")
                             .getAsString(), "_doc")
                             .source(messageAsJson, XContentType.JSON));
                 } else {

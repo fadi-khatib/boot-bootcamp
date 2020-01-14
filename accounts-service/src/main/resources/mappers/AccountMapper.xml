@@ -2,8 +2,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="mappers.UserMapper">
-    <resultMap id="userMap" type="models.User">
+<mapper namespace="mappers.AccountMapper">
+    <resultMap id="accountMap" type="models.Account">
         <constructor>
             <idArg column="ID" javaType="int"/>
             <arg column="NAME" javaType="String"/>
@@ -11,12 +11,12 @@
             <arg column="ES_INDEX_NAME" javaType="String"/>
         </constructor>
     </resultMap>
-    <select id="getUserByToken" parameterType="String" resultMap="userMap">
-        SELECT * FROM Users WHERE TOKEN = #{value}
+    <select id="getAccountByToken" parameterType="String" resultMap="accountMap">
+        SELECT * FROM Accounts WHERE TOKEN = #{value}
     </select>
 
-    <insert id="insert" parameterType="models.User">
-        INSERT INTO Users ( NAME, TOKEN ,ES_INDEX_NAME) VALUES (#{name}, #{token}, #{esIndexName} );
+    <insert id="insert" parameterType="models.Account">
+        INSERT INTO Accounts ( NAME, TOKEN ,ES_INDEX_NAME) VALUES (#{name}, #{token}, #{esIndexName} );
         <selectKey keyProperty = "TOKEN" resultType = "int" order = "AFTER">
             select last_insert_id() as id
         </selectKey>

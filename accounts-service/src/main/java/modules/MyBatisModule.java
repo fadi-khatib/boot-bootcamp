@@ -2,7 +2,7 @@ package modules;
 
 import com.google.inject.name.Names;
 import main.ServerConfiguration;
-import mappers.UserMapper;
+import mappers.AccountMapper;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
@@ -22,7 +22,7 @@ public class MyBatisModule extends org.mybatis.guice.MyBatisModule {
         bindDataSourceProviderType(PooledDataSourceProvider.class);
         bindTransactionFactoryType(JdbcTransactionFactory.class);
         Names.bindProperties(this.binder(), createProperties());
-        addMapperClass(UserMapper.class);
+        addMapperClass(AccountMapper.class);
         bind(DefaultObjectWrapperFactory.class);
         bind(DefaultObjectFactory.class);
 

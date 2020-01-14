@@ -3,8 +3,8 @@ package main;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import util.InfraUtil;
-import mappers.UserMapper;
-import models.User;
+import mappers.AccountMapper;
+import models.Account;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +26,11 @@ import static java.util.Objects.requireNonNull;
 @Path("/")
 public class EntryPoint {
     public static Logger logger = LoggerFactory.getLogger(EntryPoint.class);
-    private final UserMapper userMapper;
+    private final AccountMapper accountMapper;
 
     @Inject
-    public EntryPoint(UserMapper userMapper) {
-        this.userMapper = requireNonNull(userMapper);
+    public EntryPoint(AccountMapper accountMapper) {
+        this.accountMapper = requireNonNull(accountMapper);
     }
 
     // get account data by token
@@ -38,10 +38,10 @@ public class EntryPoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("account/token")
     public Response getAccountToken(@HeaderParam("X-ACCOUNT-TOKEN") String accountToken) {
-        User userByToken = (User)userMapper.getUserByToken(accountToken);
-        if ( userByToken != null) {
+        Account accountByToken = (Account) accountMapper.getAccountByToken(accountToken);
+        if ( accountByToken != null) {
             Gson gson = new Gson();
-            String json = gson.toJson(userByToken);
+            String json = gson.toJson(accountByToken);
             return Response.status(HttpURLConnection.HTTP_OK).entity(json).build();
         }
         return Response.status(HttpURLConnection.HTTP_NOT_FOUND).entity("Account-token not found").build();
@@ -54,21 +54,21 @@ public class EntryPoint {
     @Path("create-account")
     public Response createAccount(String accountStringJson) {
         JsonObject accountJson = InfraUtil.stringToJson(accountStringJson);
-        User newUser = createUserWithName( accountJson.get("accountName").getAsString());
-        userMapper.insert(newUser);
-        User userByToken = userMapper.getUserByToken(newUser.getToken());
-        if ( userByToken != null){
+        Account newAccount = createUserWithName( accountJson.get("accountName").getAsString());
+        accountMapper.insert(newAccount);
+        Account accountByToken = accountMapper.getAccountByToken(newAccount.getToken());
+        if ( accountByToken != null){
             Gson gson = new Gson();
-            String userJson = gson.toJson(userByToken);
-            return Response.status(HttpURLConnection.HTTP_CREATED).entity(userJson).build();
+            String accountJsonString = gson.toJson(accountByToken);
+            return Response.status(HttpURLConnection.HTTP_CREATED).entity(accountJsonString).build();
         }
         return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity("Could not create new account").build();
     }
 
-    private User createUserWithName(String accountName){
+    private Account createUserWithName(String accountName){
         String token = RandomStringUtils.random(20, false, true);
         String esIndexName = "logz-" + RandomStringUtils.random(20, false, true);
-        return new User(accountName, token, esIndexName);
+        return new Account(accountName, token, esIndexName);
     }
 
 

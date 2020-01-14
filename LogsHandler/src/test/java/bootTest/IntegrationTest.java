@@ -54,10 +54,10 @@ public class IntegrationTest {
                 .post(Entity.json(account));
         assertEquals(HttpURLConnection.HTTP_CREATED, postResponse.getStatus());
 
-        String userJsonString = postResponse.readEntity(String.class);
-        JsonObject userJson = InfraUtil.stringToJson(userJsonString);
-        String esIndexName = userJson.get("esIndexName").getAsString();
-        String token = userJson.get("token").getAsString();
+        String accountJsonString = postResponse.readEntity(String.class);
+        JsonObject accountJson = InfraUtil.stringToJson(accountJsonString);
+        String esIndexName = accountJson.get("esIndexName").getAsString();
+        String token = accountJson.get("token").getAsString();
 
         //index
         await().atMost(Duration.ofSeconds(7)).until(() -> {
