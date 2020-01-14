@@ -17,7 +17,6 @@ import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvi
 import util.InfraUtil;
 
 import javax.ws.rs.client.WebTarget;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;

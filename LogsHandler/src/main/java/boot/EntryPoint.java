@@ -1,6 +1,5 @@
 package boot;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -24,11 +23,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
-
 
 @Path("entry-point")
 public class EntryPoint {
@@ -63,16 +59,18 @@ public class EntryPoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("index")
-    public Response index(String jsonString, @HeaderParam("X-ACCOUNT-TOKEN") String accountToken) {
+    public Response index(String message, @HeaderParam("X-ACCOUNT-TOKEN") String accountToken) {
         RecordMetadata metadata = null;
-        JsonObject jsonObject = InfraUtil.stringToJson(jsonString);
+        JsonObject messageAsJson = InfraUtil.stringToJson(message);
+        messageAsJson.addProperty("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+        messageAsJson.addProperty("X-ACCOUNT-TOKEN",accountToken);
+
         Response response = accountsServiceWebTarget.path("account/token")
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-ACCOUNT-TOKEN", accountToken)
                 .get();
-        System.out.println(response.readEntity(String.class));//*local*
         if (response.getStatus() == 200) {
-            response = sendToKafka(jsonString, "Mozilla/5.0 (Macintosh; Intel Mac OS X)", accountToken);
+            response = sendToKafka(messageAsJson.toString());
         }
         return response;
     }
@@ -81,39 +79,32 @@ public class EntryPoint {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     public Response search(@HeaderParam("X-ACCOUNT-TOKEN") String accountToken) {
-        System.out.println(accountToken);//*local*
-        Response response = accountsServiceWebTarget.path("account/token")
+        Response accountByTokenResponse = accountsServiceWebTarget.path("account/token")
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-ACCOUNT-TOKEN", accountToken)
                 .get();
 
-        if (response.getStatus() == 200) {
-            JsonObject JSONObject = InfraUtil.stringToJson(response.readEntity(String.class));
-            System.out.println(JSONObject);//*local*
-            response = elasticSearch(JSONObject.get("esIndexName").getAsString());
+        if (accountByTokenResponse.getStatus() == 200) {
+            JsonObject JSONObject = InfraUtil.stringToJson(accountByTokenResponse.readEntity(String.class));
+            return searchByIndexName(JSONObject.get("esIndexName").getAsString());
         }
-        return response;
+        return accountByTokenResponse;
     }
 
-    public Response sendToKafka(String message, String userAgent, String accountToken) {
+    private Response sendToKafka(String message ) {
         RecordMetadata metadata = null;
-        Map<String, String> map = new HashMap<>();
-        map.put("message", message);
-        map.put("User-Agent", userAgent);
-        map.put("X-ACCOUNT-TOKEN", accountToken);
         try {
-            metadata = producer.send(new ProducerRecord<String, String>("my-topic", new Gson().toJson(map))).get();
-            logger.debug(" to partition " + metadata.partition() + " with offset " + metadata.offset());
+            metadata = producer.send(new ProducerRecord<String, String>("my-topic", message)).get();
         } catch (Exception e) {
-            Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).build();
+            return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).build();
         }
+        logger.debug(" to partition " + metadata.partition() + " with offset " + metadata.offset());
         return Response.status(HttpURLConnection.HTTP_OK).entity(metadata.topic()).build();
     }
 
-    public Response elasticSearch(String esIndexNam) {
+    private Response searchByIndexName(String esIndexNam) {
         SearchRequest searchRequest = elasticSearchClient.buildSearchQuery(esIndexNam);
         String result = elasticSearchClient.search(searchRequest);
-        System.out.println(result);//*local*
         return Response.status(HttpURLConnection.HTTP_OK).entity(result).build();
     }
 }

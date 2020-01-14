@@ -59,7 +59,7 @@ public class IntegrationTest {
         String esIndexName = userJson.get("esIndexName").getAsString();
         String token = userJson.get("token").getAsString();
 
-
+        //index
         await().atMost(Duration.ofSeconds(7)).until(() -> {
             Response indexResponse = webTarget.path("/index")
                     .request(MediaType.APPLICATION_JSON)
@@ -69,10 +69,8 @@ public class IntegrationTest {
             assertNotNull(indexResponse);
             return (200 == indexResponse.getStatus());
         });
-//        String result = postResponse.toString() + "\n" + postResponse.readEntity(String.class);
-//        logger.debug(result);
 
-
+        //search
         String header = "Macintosh";
         await().atMost(Duration.ofSeconds(7)).until(() -> {
             Response searchResponse = webTarget.path("search")
@@ -83,10 +81,8 @@ public class IntegrationTest {
             String entity1 = searchResponse.readEntity(String.class);
             boolean isMessageIndexed1 = searchResponse.getStatus() == HttpURLConnection.HTTP_OK;
             boolean isMessageFound1 = entity1.indexOf(key) > -1;
-            System.out.println(entity1);
             return isMessageIndexed1 && isMessageFound1;
         });
-
     }
 
     @After

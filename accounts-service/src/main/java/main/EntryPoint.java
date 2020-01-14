@@ -31,7 +31,6 @@ public class EntryPoint {
     @Inject
     public EntryPoint(UserMapper userMapper) {
         this.userMapper = requireNonNull(userMapper);
-        userMapper.createNewTableIfNotExists("Users");
     }
 
     // get account data by token

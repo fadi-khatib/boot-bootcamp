@@ -28,7 +28,7 @@ public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        //binder().requireExplicitBindings();
+        binder().requireExplicitBindings();
         install(new JerseyModule(configuration));
         install(new MyBatisModule(serverConfiguration));
         bind(EntryPoint.class);

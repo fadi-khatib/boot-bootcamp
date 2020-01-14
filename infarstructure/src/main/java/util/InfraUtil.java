@@ -18,7 +18,6 @@ public class InfraUtil {
         try {
             jObject = parser.parse(jsonString).getAsJsonObject();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
         return jObject;

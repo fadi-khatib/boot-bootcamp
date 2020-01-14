@@ -3,6 +3,8 @@ package modules;
 import com.google.inject.name.Names;
 import main.ServerConfiguration;
 import mappers.UserMapper;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import java.util.Properties;
@@ -21,6 +23,9 @@ public class MyBatisModule extends org.mybatis.guice.MyBatisModule {
         bindTransactionFactoryType(JdbcTransactionFactory.class);
         Names.bindProperties(this.binder(), createProperties());
         addMapperClass(UserMapper.class);
+        bind(DefaultObjectWrapperFactory.class);
+        bind(DefaultObjectFactory.class);
+
 
     }
 
