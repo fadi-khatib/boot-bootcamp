@@ -1,8 +1,7 @@
 package util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 import java.io.FileNotFoundException;
@@ -11,16 +10,13 @@ import java.io.FileReader;
 public class InfraUtil {
 
     // jsonString to JSON object
-    public static JsonObject stringToJson(String jsonString) {
-        Object obj = null;
-        JsonParser parser = new JsonParser();
-        JsonObject jObject = null;
+    public static <T> T stringToObject(String json, Class<T> tClass) {
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            jObject = parser.parse(jsonString).getAsJsonObject();
-        } catch (Exception e) {
+            return mapper.readValue(json, tClass);
+        } catch ( Exception e ) {
             throw new RuntimeException(e);
         }
-        return jObject;
     }
 
     public static <T> T load(String fileName, Class<T> tClass) {

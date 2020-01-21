@@ -1,5 +1,6 @@
 package boot;
 
+import accountModules.AccountsServiceClientModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import io.logz.guice.jersey.JerseyModule;
@@ -13,10 +14,10 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
 import util.InfraUtil;
 
-import javax.ws.rs.client.WebTarget;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
@@ -41,6 +42,7 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
         binder().requireExplicitBindings();
         install(new JerseyModule(configuration));
+        install(new AccountsServiceClientModule(serverConfiguration.getAccountsServiceHost(), serverConfiguration.getAccountsServicePort()));
         bind(EntryPoint.class);
         bind(ElasticSearchHandler.class);
     }
@@ -73,13 +75,6 @@ public class ServerModule extends AbstractModule {
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getElasticPort(), "http"),
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getAdditionalElasticPort(), "http")));
         return client;
-    }
-
-    @Provides
-    public WebTarget providesAccountsServiceWebTarget() {
-        String accountServiceUri = "http://" + serverConfiguration.getAccountsServiceHost() + ":"
-                + serverConfiguration.getAccountsServicePort() + "/";
-        return ClientBuilder.newClient().target(accountServiceUri);
     }
 
 }

@@ -1,6 +1,6 @@
 package mappers;
 
-import models.Account;
+import pojos.account.Account;
 
 public interface AccountMapper {
     public int insert(Account account);

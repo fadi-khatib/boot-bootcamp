@@ -10,10 +10,8 @@ import org.elasticsearch.index.query.MatchAllQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import static java.util.Objects.requireNonNull;
 
 
@@ -32,7 +30,7 @@ public class ElasticSearchHandler {
     public String search(SearchRequest searchRequest) {
         SearchResponse searchResponse = null;
         try {
-            searchResponse = client.search((SearchRequest) searchRequest, RequestOptions.DEFAULT);
+            searchResponse = client.search( searchRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             logger.error(e.getMessage());
             return e.getMessage();

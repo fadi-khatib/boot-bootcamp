@@ -3,4 +3,7 @@ include 'Consumer'
 include 'LogsHandler'
 include 'infarstructure'
 include 'accounts-service'
+include ':accounts-service:client'
+findProject(':accounts-service:client')?.name = 'client'
+include ':accounts-service:client'
 
