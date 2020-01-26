@@ -33,19 +33,6 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testEndToEnd() {
-        String key = RandomStringUtils.random(15, false, true);
-        String jsonObjectAsString = "{\"message\":\"" + key + "\"}";
-        CreateAccountRequest createAccountRequest = new CreateAccountRequest("fadi");
-
-        Account account = createAccount(createAccountRequest);
-        String token = account.getToken();
-
-        indexAndAssert(token, jsonObjectAsString);
-
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchAndAssertMessage(key, account.getToken()));
-    }
-    @Test
     public void testTwoAccounts() {
         String message1Key = RandomStringUtils.random(15, false, true);
         String message2Key = RandomStringUtils.random(15, false, true);
@@ -65,8 +52,11 @@ public class IntegrationTest {
         indexAndAssert(token1, message1);
         indexAndAssert(token2, message2);
 
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verifyAccountDoesNotHaveMessage(message2Key, account1.getToken()));
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verifyAccountDoesNotHaveMessage(message1Key, account2.getToken()));
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchAndAssertMessage(message1Key, account1.getToken()));
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchAndAssertMessage(message2Key, account2.getToken()));
+
+        verifyAccountDoesNotHaveMessage(message2Key, account1.getToken());
+        verifyAccountDoesNotHaveMessage(message1Key, account2.getToken());
     }
 
     @Test

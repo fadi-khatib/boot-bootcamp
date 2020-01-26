@@ -21,7 +21,6 @@ public class ElasticSearchHandler {
     private static Logger logger = LogManager.getLogger(ElasticSearchHandler.class);
     private RestHighLevelClient client;
 
-    @Inject
     public ElasticSearchHandler(RestHighLevelClient client) {
         this.client = requireNonNull(client);
     }

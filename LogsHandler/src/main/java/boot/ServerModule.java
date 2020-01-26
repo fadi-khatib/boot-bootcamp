@@ -44,15 +44,6 @@ public class ServerModule extends AbstractModule {
         install(new JerseyModule(configuration));
         install(new AccountsServiceClientModule(serverConfiguration.getAccountsServiceHost(), serverConfiguration.getAccountsServicePort()));
         bind(EntryPoint.class);
-        bind(ElasticSearchHandler.class);
-    }
-
-    @Provides
-    public Client providesClient() {
-        ClientConfig config = new ClientConfig();
-        config.register(JacksonJsonProvider.class);
-        Client client = ClientBuilder.newClient(config);
-        return client;
     }
 
     @Provides
@@ -69,12 +60,12 @@ public class ServerModule extends AbstractModule {
     }
 
     @Provides
-    public RestHighLevelClient providesRestHighLevelClient() {
+    public ElasticSearchHandler providesElasticSearchHandler() {
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getElasticPort(), "http"),
                         new HttpHost(serverConfiguration.getElasticHost(), serverConfiguration.getAdditionalElasticPort(), "http")));
-        return client;
+        return new ElasticSearchHandler(client);
     }
 
 }
