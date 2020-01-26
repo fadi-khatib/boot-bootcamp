@@ -20,9 +20,9 @@ import java.net.HttpURLConnection;
 
 import pojos.account.Account;
 import pojos.account.CreateAccountRequest;
+import util.GlobalParams;
 
 public class IntegrationTest {
-    private final String X_ACCOUNT_TOKEN = "X-ACCOUNT-TOKEN";
     private static final String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X)";
     private static final String REST_API_URI = "http://localhost:8080/entry-point";
     private static WebTarget webTarget;
@@ -65,8 +65,8 @@ public class IntegrationTest {
         indexAndAssert(token1, message1);
         indexAndAssert(token2, message2);
 
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchAndAssertAccountLogs(message2Key, account1.getToken()));
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchAndAssertAccountLogs(message1Key, account2.getToken()));
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verifyAccountDoesNotHaveMessage(message2Key, account1.getToken()));
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verifyAccountDoesNotHaveMessage(message1Key, account2.getToken()));
     }
 
     @Test
@@ -78,12 +78,11 @@ public class IntegrationTest {
         Response indexResponse = webTarget.path("/index")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.USER_AGENT, userAgent)
-                .header(X_ACCOUNT_TOKEN, token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .post(Entity.json(jsonObjectAsString));
         assertNotNull(indexResponse);
         assertTrue(401 == indexResponse.getStatus());
-
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> searchWithInvalidToken(key, token));
+        searchWithInvalidToken(token);
     }
 
     @After
@@ -106,37 +105,37 @@ public class IntegrationTest {
         Response response = webTarget.path("/index")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.USER_AGENT, userAgent)
-                .header(X_ACCOUNT_TOKEN, token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .post(Entity.json(message));
         assertNotNull(response);
         assertTrue(200 == response.getStatus());
     }
 
-    private void searchAndAssertAccountLogs(String key, String token) {
+    private void verifyAccountDoesNotHaveMessage(String message, String accountToken) {
         Response searchResponse = webTarget.path("search")
                 .request(MediaType.APPLICATION_JSON)
-                .header(this.X_ACCOUNT_TOKEN, token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, accountToken)
                 .get();
         assertNotNull(searchResponse);
         String entity = searchResponse.readEntity(String.class);
-        assertTrue(entity.indexOf(key) == -1);
+        assertTrue(!entity.contains(message));
     }
 
     private void searchAndAssertMessage(String key, String token) {
         Response searchResponse = webTarget.path("search")
                 .request(MediaType.APPLICATION_JSON)
-                .header(this.X_ACCOUNT_TOKEN, token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .get();
         assertNotNull(searchResponse);
         String entity = searchResponse.readEntity(String.class);
         assertTrue(searchResponse.getStatus() == HttpURLConnection.HTTP_OK);
-        assertTrue(entity.indexOf(key) > -1);
+        assertTrue(entity.contains(key));
     }
 
-    private void searchWithInvalidToken(String key, String token) {
+    private void searchWithInvalidToken(String token) {
         Response searchResponse = webTarget.path("search")
                 .request(MediaType.APPLICATION_JSON)
-                .header(X_ACCOUNT_TOKEN, token)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, token)
                 .get();
         assertNotNull(searchResponse);
         assertTrue(searchResponse.getStatus() == HttpURLConnection.HTTP_UNAUTHORIZED);

@@ -8,9 +8,9 @@ import javax.ws.rs.core.Response;
 
 import pojos.account.Account;
 import pojos.account.CreateAccountRequest;
+import util.GlobalParams;
 
 public class AccountsServiceClient {
-    private final String X_ACCOUNT_TOKEN = "X-ACCOUNT-TOKEN";
     private WebTarget target;
 
 
@@ -22,7 +22,7 @@ public class AccountsServiceClient {
     public Account getAccountByToken(String accountToken) {
         Response response = target.path("account/token")
                 .request(MediaType.APPLICATION_JSON)
-                .header(X_ACCOUNT_TOKEN, accountToken)
+                .header(GlobalParams.X_ACCOUNT_TOKEN, accountToken)
                 .get();
         return response.readEntity(Account.class);
     }

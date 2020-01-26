@@ -1,8 +1,6 @@
 package Consumer;
 
 import client.AccountsServiceClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -17,7 +15,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import pojos.account.Account;
 import util.InfraUtil;
 
-
+import util.GlobalParams;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Map;
@@ -26,7 +24,6 @@ import static java.util.Objects.requireNonNull;
 
 
 public class KafkaReceiver {
-    private final String X_ACCOUNT_TOKEN = "X-ACCOUNT-TOKEN";
     private static Logger logger = LogManager.getLogger(KafkaReceiver.class);
     private final RestHighLevelClient elasticSearchClient;
     private final Consumer<String, String> consumer;
@@ -47,17 +44,12 @@ public class KafkaReceiver {
             for (ConsumerRecord<String, String> record : records) {
 
                 Map<String, Object> map = InfraUtil.stringToObject(record.value(), Map.class);
-                Account accountByToken = accountsServiceClient.getAccountByToken( (String) map.get(X_ACCOUNT_TOKEN));
-                map.remove(X_ACCOUNT_TOKEN);
+                Account accountByToken = accountsServiceClient.getAccountByToken( (String) map.get(GlobalParams.X_ACCOUNT_TOKEN));
+                map.remove(GlobalParams.X_ACCOUNT_TOKEN);
 
-                ObjectMapper objectMapper = new ObjectMapper();
                 if (accountByToken != null) {
-                    try {
                         bulkRequest.add(new IndexRequest(accountByToken.getEsIndexName(),"_doc")
-                                .source(objectMapper.writeValueAsString(map), XContentType.JSON));
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
+                                .source(InfraUtil.toJsonString(map), XContentType.JSON));
                 } else {
                     logger.error("unauthorized account");
                 }

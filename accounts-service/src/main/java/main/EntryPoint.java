@@ -16,13 +16,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
-
+import util.GlobalParams;
 import static java.util.Objects.requireNonNull;
 
 
 @Path("/")
 public class EntryPoint {
-    final String X_ACCOUNT_TOKEN = "X-ACCOUNT-TOKEN";
     private final AccountMapper accountMapper;
 
     @Inject
@@ -34,9 +33,8 @@ public class EntryPoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("account/token")
-    public Response getAccountToken(@HeaderParam(X_ACCOUNT_TOKEN) String accountToken) {
+    public Response getAccountToken(@HeaderParam(GlobalParams.X_ACCOUNT_TOKEN) String accountToken) {
         Account accountByToken = accountMapper.getAccountByToken(accountToken);
-        System.out.println(accountByToken.toString());
         return Response.status(HttpURLConnection.HTTP_OK).entity(accountByToken).build();
    }
 

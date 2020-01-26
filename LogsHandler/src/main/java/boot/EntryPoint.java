@@ -1,8 +1,6 @@
 package boot;
 
 import client.AccountsServiceClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -26,11 +24,12 @@ import javax.ws.rs.core.Response;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
+import util.GlobalParams;
+
 import static java.util.Objects.requireNonNull;
 
 @Path("entry-point")
 public class EntryPoint {
-    private final String  X_ACCOUNT_TOKEN = "X-ACCOUNT-TOKEN";
     public static Logger logger = LogManager.getLogger(EntryPoint.class);
     private final ElasticSearchHandler elasticSearchClient;
     private final Producer<String, String> producer;
@@ -38,7 +37,7 @@ public class EntryPoint {
 
     @Inject
     @Singleton
-    public EntryPoint(ElasticSearchHandler elasticSearchClient, Producer<String, String> producer, AccountsServiceClient accountsServiceClient) { //WebTarget accountsServiceWebTarget
+    public EntryPoint(ElasticSearchHandler elasticSearchClient, Producer<String, String> producer, AccountsServiceClient accountsServiceClient) {
         this.elasticSearchClient = requireNonNull(elasticSearchClient);
         this.producer = requireNonNull(producer);
         this.accountsServiceClient = requireNonNull(accountsServiceClient);
@@ -52,7 +51,7 @@ public class EntryPoint {
         //JsonObject jsonObject = InfraUtil.stringToJson(jsonString);
         CreateAccountRequest createAccountRequest = InfraUtil.stringToObject(jsonString, CreateAccountRequest.class);
         Account account = accountsServiceClient.createAccount(createAccountRequest);
-        if(account!= null) {
+        if (account != null) {
             return Response.status(HttpURLConnection.HTTP_CREATED).entity(account).build();
         }
         return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity("Fail to create account").build();
@@ -63,19 +62,14 @@ public class EntryPoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("index")
-    public Response index(String message, @HeaderParam(X_ACCOUNT_TOKEN) String accountToken) {
+    public Response index(String message, @HeaderParam(GlobalParams.X_ACCOUNT_TOKEN) String accountToken) {
 
-        Map<String, Object>  map = InfraUtil.stringToObject(message, Map.class);
-        map.put("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X)");
-        map.put(X_ACCOUNT_TOKEN,accountToken);
-        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = InfraUtil.stringToObject(message, Map.class);
+        map.put(GlobalParams.USER_AGENT, "Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+        map.put(GlobalParams.X_ACCOUNT_TOKEN, accountToken);
         Account account = accountsServiceClient.getAccountByToken(accountToken);
         if (account != null) {
-            try {
-                return sendToKafka(objectMapper.writeValueAsString(map));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            return sendToKafka(InfraUtil.toJsonString(map));
         }
         return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity("fail to index: unauthorized token").build();
     }
@@ -83,7 +77,7 @@ public class EntryPoint {
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response search(@HeaderParam(X_ACCOUNT_TOKEN) String accountToken) {
+    public Response search(@HeaderParam(GlobalParams.X_ACCOUNT_TOKEN) String accountToken) {
         Account account = accountsServiceClient.getAccountByToken(accountToken);
         if (account != null) {
             return searchByIndexName(account.getEsIndexName());
@@ -91,7 +85,7 @@ public class EntryPoint {
         return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).entity("No such account found").build();
     }
 
-    private Response sendToKafka(String message ) {
+    private Response sendToKafka(String message) {
         RecordMetadata metadata = null;
         try {
             metadata = producer.send(new ProducerRecord<String, String>("my-topic", message)).get();
