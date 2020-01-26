@@ -11,9 +11,26 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
-    compile "com.googlecode.json-simple:json-simple:1.1.1"
+    compile group: 'io.logz.log4j2', name: 'logzio-log4j2-appender', version: '1.0.5'
 
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'org.slf4j:slf4j-simple:1.6.4'
+    compile 'org.apache.logging.log4j:log4j-core:2.9.0'
+
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.3'
+
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.8.5'
+
+    compile 'io.logz:guice-jersey:1.0.9'
+
+    compile group: "org.glassfish.jersey.media",name:"jersey-media-json-jackson",version: "2.17"
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.2'
+
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
+    compile "org.apache.commons:commons-lang3:3.3.2"
+
+    testCompile 'junit:junit:4.12'
 }

@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id "application"
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'boot-bootcamp'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+ext {
+    jettyVersion = '9.4.6.v20170531'
+    jerseyVersion = '2.27'
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = "main.MainClass"
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer)
+}
+
+dependencies {
+
+
+    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.17'
+
+    // MyBatis
+    compile 'org.mybatis:mybatis:3.5.3'
+
+    // MyBatis Guice
+    compile 'org.mybatis:mybatis-guice:3.10'
+
+    // JDBC Driver
+    compile 'mysql:mysql-connector-java:5.1.+'
+
+    compile project(':infarstructure')
+    compile project(':accounts-service:client')
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: "org.glassfish.jersey.media",name:"jersey-media-json-jackson",version: "2.17"
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.2'
+
+}

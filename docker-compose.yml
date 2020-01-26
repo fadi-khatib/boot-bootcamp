@@ -1,5 +1,25 @@
 version: '3'
 services:
+
+  db:
+    image: mysql:5.6
+    restart: always
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    networks:
+      - kafkastreams-network
+    volumes:
+      - ./infarstructure/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+
+
   haproxy:
     image: haproxy:latest
     volumes:
@@ -12,6 +32,13 @@ services:
     networks:
       - kafkastreams-network
 
+
+  accounts-service:
+    build: ./accounts-service
+    ports:
+      - "8083:8083"
+    networks:
+      - kafkastreams-network
 
 
   server:
@@ -71,4 +98,4 @@ volumes:
   my-db:
 
 networks:
-    kafkastreams-network:
+  kafkastreams-network:

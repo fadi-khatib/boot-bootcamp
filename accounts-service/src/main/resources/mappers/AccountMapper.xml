@@ -1,0 +1,28 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mappers.AccountMapper">
+    <resultMap id="accountMap" type="pojos.account.Account">
+        <constructor>
+            <idArg column="id" javaType="_int"/>
+            <arg column="name" javaType="String"/>
+            <arg column="token" javaType="String"/>
+            <arg column="es_index_name" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="getAccountByToken" parameterType="String" resultMap="accountMap">
+        SELECT * FROM accounts WHERE token = #{value}
+    </select>
+
+    <insert id="insert" parameterType="pojos.account.Account">
+        INSERT INTO accounts ( name, token, es_index_name) VALUES (#{name}, #{token}, #{esIndexName} );
+        <selectKey keyProperty = "id" resultType = "int" order = "AFTER">
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+
+</mapper>
+
+
